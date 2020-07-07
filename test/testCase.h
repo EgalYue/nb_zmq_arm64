@@ -12,7 +12,7 @@
 #include "ninebot_zmq/ninebot_zmq.h"
 
 using namespace ninebot_algo;
-// using namespace nb_zmq;
+using namespace nb_zmq;
 
 namespace pubCase
 {
@@ -33,6 +33,7 @@ namespace pubCase
         //    cv::imshow("test", cur_img);
         //    cv::waitKey(1);
     }
+    
 
     void toFrameImg(const cv::Mat &src, std::shared_ptr<FrameImage> dst, const std::string &frame_id, int64_t time_stamp)
     {
@@ -75,7 +76,8 @@ namespace pubCase
             }
         }
     }
-
+    
+    
     void toFrameImg(const cv::Mat &src, std::shared_ptr<FrameStampedImageWithPose> dst, const std::string &frame_id, int64_t time_stamp)
     {
         // img descriptor
@@ -130,7 +132,9 @@ namespace pubCase
             }
         }
     }
+    */
 
+/*
     void Image_case(nb_zmq::ZmqPublisher &mq_pub, std::string &filepath, std::string &topic)
     {
         cv::Mat cur_img;
@@ -155,7 +159,7 @@ namespace pubCase
     }
 */
 
-    void Image_case(nb_zmq::ZmqPublisher& mq_pub, std::string& topic, int frame_id){
+    void Image_case( std::shared_ptr<nb_zmq::ZmqPublisher> mq_pub, std::string& topic, int frame_id){
         std::shared_ptr<FrameStampedImageWithPose> frame_pub = std::make_shared<FrameStampedImageWithPose>();
 
         // img raw data
@@ -204,10 +208,10 @@ namespace pubCase
         frame_pub->msg_desc = imgProto;
         std::cout << ">>> frame_pub->raw_data->data().size() : "<< frame_pub->raw_data->size() << std::endl;
 
-        mq_pub.publish(frame_pub.get(), topic);
+        mq_pub->publish(frame_pub.get(), topic);
     }
 
-    void StampedLidarScan_case(nb_zmq::ZmqPublisher &mq_pub, std::string &topic, int frame_id)
+    void StampedLidarScan_case( std::shared_ptr<nb_zmq::ZmqPublisher> mq_pub, std::string &topic, int frame_id)
     {
         std::shared_ptr<FrameStampedLidarScan> frame_pub = std::make_shared<FrameStampedLidarScan>();
         int64_t curr_ts = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
@@ -252,10 +256,10 @@ namespace pubCase
         std::cout << ">>> frame_pub->ranges->data().size() " << frame_pub->intensities->size() << std::endl;
         std::cout << ">>> frame_pub->ranges->at(last) " << frame_pub->intensities->at(size - 1) << std::endl;
 
-        mq_pub.publish(frame_pub.get(), topic); //TODO topic
+        mq_pub->publish(frame_pub.get(), topic); //TODO topic
     }
 
-    void StampedIMU_case(nb_zmq::ZmqPublisher &mq_pub, std::string &topic, int frame_id)
+    void StampedIMU_case( std::shared_ptr<nb_zmq::ZmqPublisher> mq_pub, std::string &topic, int frame_id)
     {
         int64_t curr_ts = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
         std::cout << curr_ts << std::endl;
@@ -280,10 +284,10 @@ namespace pubCase
         gyro_xyz->set_z(6.6);
 
         std::shared_ptr<Segway_proto::StampedIMU> protoMsgPtr = std::make_shared<Segway_proto::StampedIMU>(imu_proto);
-        mq_pub.publish(protoMsgPtr.get(), topic); //TODO topic
+        mq_pub->publish(protoMsgPtr.get(), topic); //TODO topic
     }
 
-    void StampedEncoderData_case(nb_zmq::ZmqPublisher &mq_pub, std::string &topic, int frame_id)
+    void StampedEncoderData_case( std::shared_ptr<nb_zmq::ZmqPublisher> mq_pub, std::string &topic, int frame_id)
     {
         int64_t curr_ts = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
         std::cout << curr_ts << std::endl;
@@ -308,10 +312,10 @@ namespace pubCase
         data->set_right_ticks(6);
 
         std::shared_ptr<Segway_proto::StampedEncoderData> protoMsgPtr = std::make_shared<Segway_proto::StampedEncoderData>(encoderProto);
-        mq_pub.publish(protoMsgPtr.get(), topic);
+        mq_pub->publish(protoMsgPtr.get(), topic);
     }
 
-    void StampedPose3Dd_case(nb_zmq::ZmqPublisher &mq_pub, std::string &topic, int frame_id)
+    void StampedPose3Dd_case( std::shared_ptr<nb_zmq::ZmqPublisher> mq_pub, std::string &topic, int frame_id)
     {
         int64_t curr_ts = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
         std::cout << curr_ts << std::endl;
@@ -336,7 +340,7 @@ namespace pubCase
         quat->set_w(1);
 
         std::shared_ptr<Segway_proto::StampedPose3Dd> protoMsgPtr = std::make_shared<Segway_proto::StampedPose3Dd>(point3DProto);
-        mq_pub.publish(protoMsgPtr.get(), topic);
+        mq_pub->publish(protoMsgPtr.get(), topic);
     }
 } // namespace pubCase
 
@@ -372,15 +376,10 @@ namespace subCase
         std::cout << ">>> FrameStampedImageWithPose raw data [last] z: " << (unsigned)framePtr->raw_data->at(framePtr->raw_data->size() - 1) << std::endl;
     }
 
-    int Image_case(nb_zmq::ZmqSubscriber &mq_recv, std::string &topic, bool hasCallback)
+    int Image_case(std::shared_ptr<nb_zmq::ZmqSubscriber> mq_recv, std::string &topic)
     {
-        if (hasCallback){
-            mq_recv.subscribe(topic, callbackFuncImage_case);
-            return 1;
-        }
-
         std::shared_ptr<FrameStampedImageWithPose> frame_recv = std::make_shared<FrameStampedImageWithPose>();
-        int res = mq_recv.subscribe(frame_recv.get(), topic);
+        int res = mq_recv->subscribe(frame_recv.get(), topic);
         if(res > 0){
             callbackFuncImage_case(frame_recv.get());
         }
@@ -407,15 +406,10 @@ namespace subCase
 
     }
 
-    int StampedLidarScan_case(nb_zmq::ZmqSubscriber &mq_recv, std::string &topic, bool hasCallback)
+    int StampedLidarScan_case(std::shared_ptr<nb_zmq::ZmqSubscriber> mq_recv, std::string &topic)
     {
-        if (hasCallback){
-            mq_recv.subscribe(topic, callbackFuncLidar);
-            return 1;
-        }
-
         std::shared_ptr<FrameStampedLidarScan> frame_recv = std::make_shared<FrameStampedLidarScan>();
-        int res = mq_recv.subscribe(frame_recv.get(), topic);
+        int res = mq_recv->subscribe(frame_recv.get(), topic);
         if ( res > 0){
             callbackFuncLidar(frame_recv.get());
         }
@@ -440,15 +434,10 @@ namespace subCase
         std::cout << ">>> StampedIMU pose z: " << protoMsgPtr->data().gyro_xyz().z() << std::endl;
     }
 
-    int StampedIMU_case(nb_zmq::ZmqSubscriber &mq_recv, std::string &topic, bool hasCallback)
+    int StampedIMU_case(std::shared_ptr<nb_zmq::ZmqSubscriber> mq_recv, std::string &topic)
     {
-        if (hasCallback){
-            mq_recv.subscribe(topic, callbackFuncIMU);
-            return 1;
-        }
-
         std::shared_ptr<Segway_proto::StampedIMU> protoMsgPtr = std::make_shared<Segway_proto::StampedIMU>();
-        int res = mq_recv.subscribe(protoMsgPtr.get(), topic);
+        int res = mq_recv->subscribe(protoMsgPtr.get(), topic);
         if (res > 0){
             callbackFuncIMU(protoMsgPtr.get());
         }
@@ -468,15 +457,10 @@ namespace subCase
         std::cout << ">>> StampedEncoderData_case linear_velocity: " << protoMsgPtr->data().linear_velocity() << std::endl;
     }
 
-    int StampedEncoderData_case(nb_zmq::ZmqSubscriber &mq_recv, std::string &topic, bool hasCallback)
+    int StampedEncoderData_case(std::shared_ptr<nb_zmq::ZmqSubscriber> mq_recv, std::string &topic)
     {
-        if (hasCallback){
-            mq_recv.subscribe(topic, callbackEncoderData);
-            return 1;
-        }
-
         std::shared_ptr<Segway_proto::StampedEncoderData> protoMsgPtr = std::make_shared<Segway_proto::StampedEncoderData>();
-        int res = mq_recv.subscribe(protoMsgPtr.get(), topic);
+        int res = mq_recv->subscribe(protoMsgPtr.get(), topic);
         if (res > 0){
             callbackEncoderData(protoMsgPtr.get());
         }
@@ -501,15 +485,10 @@ namespace subCase
         std::cout << ">>> StampedPose3Dd pose w: " << protoMsgPtr->pose().q_xyzw().w() << std::endl;
     }
 
-    int StampedPose3Dd_case(nb_zmq::ZmqSubscriber &mq_recv, std::string &topic, bool hasCallback)
+    int StampedPose3Dd_case(std::shared_ptr<nb_zmq::ZmqSubscriber> mq_recv, std::string &topic)
     {
-        if (hasCallback){
-            mq_recv.subscribe(topic, callbackPose3Dd);
-            return 1;
-        }
-
         std::shared_ptr<Segway_proto::StampedPose3Dd> protoMsgPtr = std::make_shared<Segway_proto::StampedPose3Dd>();
-        int res = mq_recv.subscribe(protoMsgPtr.get(), topic);
+        int res = mq_recv->subscribe(protoMsgPtr.get(), topic);
         if (res > 0){
             callbackPose3Dd(protoMsgPtr.get());
         }
@@ -602,7 +581,7 @@ namespace subPubCase
         std::cout << ">>> StampedEncoderData_case linear_velocity: " << protoMsgPtr->data().linear_velocity() << std::endl;
     }
 
-    void StampedPose3Dd_case(nb_zmq::ZmqSubscriber &mq_recv, nb_zmq::ZmqPublisher &mq_pub, const std::string &topic)
+    void StampedPose3Dd_case(nb_zmq::ZmqSubscriber &mq_recv, nb_zmq::ZmqPublisher &mq_pub, void* pubSocket, const std::string &topic)
     {
         std::shared_ptr<Segway_proto::StampedPose3Dd> protoMsgPtr = std::make_shared<Segway_proto::StampedPose3Dd>();
         // 1. subscribe
@@ -625,11 +604,11 @@ namespace subPubCase
 
 namespace serverCase
 {
-    int SlamStartup_case(nb_zmq::ZmqRepServer &zmqRepServer)
+    int SlamStartup_case(std::shared_ptr<nb_zmq::ZmqRepServer> zmqRepServerPtr)
     {
         std::shared_ptr<Segway_proto::SlamStartup> protoMsgPtr = std::make_shared<Segway_proto::SlamStartup>();
 
-        int flag = zmqRepServer.reply(protoMsgPtr.get());
+        int flag = zmqRepServerPtr->reply(protoMsgPtr.get());
         std::cout << ">>> Client recv protoMsgPtr->use_fake_pose: " << protoMsgPtr->use_fake_pose() << std::endl;
         std::cout << ">>> Client recv protoMsgPtr->camera model: " << protoMsgPtr->fisheye().model() << std::endl;
         if (1 == flag)
@@ -643,10 +622,10 @@ namespace serverCase
         return flag;
     }
 
-    int Response_case(nb_zmq::ZmqRepServer &zmqRepServer)
+    int Response_case(std::shared_ptr<nb_zmq::ZmqRepServer> zmqRepServerPtr)
     {
         std::shared_ptr<Segway_proto::Response> protoMsgPtr = std::make_shared<Segway_proto::Response>();
-        int flag = zmqRepServer.reply(protoMsgPtr.get()); // SlamStartup
+        int flag = zmqRepServerPtr->reply(protoMsgPtr.get()); // SlamStartup
 
         std::cout << ">>> Client recv Response->type: " << protoMsgPtr->type() << std::endl;
         std::cout << ">>> Client recv Response->code: " << protoMsgPtr->code() << std::endl;
@@ -663,12 +642,12 @@ namespace serverCase
         return flag;
     }
 
-    int IP_case(nb_zmq::ZmqRepServer &zmqRepServer)
+    int IP_case(std::shared_ptr<nb_zmq::ZmqRepServer> zmqRepServerPtr)
     {
         std::string serverIP;
         if (GetIP(serverIP))
         {
-            int flag = zmqRepServer.reply(serverIP);
+            int flag = zmqRepServerPtr->reply(serverIP);
             if (1 == flag)
             {
                 //J4A_ALOGD("[ZMQ Server]: Navi-port send '%s' to Cal-port successfully!", serverIP.c_str());
@@ -689,14 +668,14 @@ namespace serverCase
     }
 
 
-    int androidCtrl_case(nb_zmq::AndroidControl &androidCtrl, long timeout)
+    int androidCtrl_case(std::shared_ptr<nb_zmq::AndroidControl> androidCtrlPtr, long timeout)
     {
         Segway_proto::HeartbeatCmd hbc;
         hbc.set_hb(8);
         hbc.set_cmd(5);
         std::shared_ptr<Segway_proto::HeartbeatCmd> protoMsgPtr = std::make_shared<Segway_proto::HeartbeatCmd>(hbc);
 
-        int flag = androidCtrl.replyHeartBeat(protoMsgPtr.get(), timeout);
+        int flag = androidCtrlPtr->replyHeartBeat(protoMsgPtr.get(), timeout);
         if (1 == flag)
         {
             //J4A_ALOGD("[ZMQ AndroidCtrl]: Navi-port send '%s' to Cal-port successfully!", serverIP.c_str());
@@ -714,7 +693,7 @@ namespace serverCase
 
 namespace clientCase
 {
-    int SlamStartup_case(nb_zmq::ZmqReqClient &zmqReqClient)
+    int SlamStartup_case(std::shared_ptr<nb_zmq::ZmqReqClient> zmqReqClientPtr)
     {
         Segway_proto::SlamStartup slamStartup;
         auto fisheye = slamStartup.mutable_fisheye();
@@ -722,7 +701,7 @@ namespace clientCase
         slamStartup.set_use_fake_pose(true);
         std::shared_ptr<Segway_proto::SlamStartup> protoMsgPtr = std::make_shared<Segway_proto::SlamStartup>(slamStartup);
 
-        int flag = zmqReqClient.request(protoMsgPtr.get());
+        int flag = zmqReqClientPtr->request(protoMsgPtr.get());
         if (1 == flag)
         {
             std::cout << ">>> Cal-port receive SlamStartup proto from Navi-port successfully!" << std::endl;
@@ -734,7 +713,7 @@ namespace clientCase
         return flag;
     }
 
-    int Response_case(nb_zmq::ZmqReqClient &zmqReqClient)
+    int Response_case(std::shared_ptr<nb_zmq::ZmqReqClient> zmqReqClientPtr)
     {
         Segway_proto::Response resp;
         resp.set_type("type_ex");
@@ -742,7 +721,7 @@ namespace clientCase
         resp.set_info("This is response ex");
         std::shared_ptr<Segway_proto::Response> protoMsgPtr = std::make_shared<Segway_proto::Response>(resp);
 
-        int flag = zmqReqClient.request(protoMsgPtr.get());
+        int flag = zmqReqClientPtr->request(protoMsgPtr.get());
         if (1 == flag)
         {
             std::cout << ">>> Cal-port send Response proto to Navi-port successfully!" << std::endl;
@@ -754,10 +733,10 @@ namespace clientCase
         return flag;
     }
 
-    int IP_case(nb_zmq::ZmqReqClient &zmqReqClient)
+    int IP_case(std::shared_ptr<nb_zmq::ZmqReqClient> zmqReqClientPtr)
     {
         std::string serverIP;
-        int flag = zmqReqClient.request(serverIP);
+        int flag = zmqReqClientPtr->request(serverIP);
         if (1 == flag)
         {
             //J4A_ALOGD("[ZMQ Client]: Cal-port send Response proto to Navi-port successfully!");
@@ -771,14 +750,14 @@ namespace clientCase
         return flag;
     }
 
-    int linuxCtrl_case(nb_zmq::LinuxControl &linuxCtrl, long timeout)
+    int linuxCtrl_case(std::shared_ptr<nb_zmq::LinuxControl> linuxCtrlPtr, long timeout)
     {
         Segway_proto::HeartbeatCmd hbc;
         hbc.set_hb(8);
         hbc.set_cmd(5);
         std::shared_ptr<Segway_proto::HeartbeatCmd> protoMsgPtr = std::make_shared<Segway_proto::HeartbeatCmd>(hbc);
 
-        int flag = linuxCtrl.requestHeartBeat(protoMsgPtr.get(), timeout); //ms
+        int flag = linuxCtrlPtr->requestHeartBeat(protoMsgPtr.get(), timeout); //ms
         if (1 == flag)
         {
             //J4A_ALOGD("[ZMQ Client]: Cal-port send heartbeat to Navi-port successfully!");

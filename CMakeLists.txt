@@ -14,6 +14,10 @@ link_libraries(/home/linaro/nb_zmq_arm64/lib/arm64_v8a/libzmq.a)
 
 
 add_executable(zmqPub test/zmqPubMain.cpp )
+add_executable(zmqSub test/zmqSubMain.cpp )
+add_executable(zmqRepServer test/zmqRepServerMain.cpp )
+add_executable(zmqReqClient test/zmqReqClientMain.cpp )
+add_executable(zmqSubAllThreadMain test/zmqSubAllThreadMain.cpp)
 
 # add_executable(zmqSub test/zmqSubMain.cpp ${SRC_CPP} ${PROTO_SRCS})
 # target_link_libraries(zmqSub ${ZMQ_LIBRARIES} ${PROTOBUF_LIBRARIES} ${OpenCV_LIBS})

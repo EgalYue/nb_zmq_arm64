@@ -11,17 +11,18 @@ namespace ninebot_algo{
     namespace nb_zmq{
         class ZmqRepServer {
         public:
-            ZmqRepServer();
+            ZmqRepServer(void* context, const std::string& ip, const std::string& msgType);
+
             ~ZmqRepServer();
 
-            int init(const std::string& ip, const std::string& msgType);
+            void closeSocket();
+
+            // int init(const std::string& ip, const std::string& msgType);
 
             /**
              * IPC 
              */  
-            int init();
-
-            void close();
+            // int init();
 
             void setStopSignal(bool stopSignal);
 
@@ -50,16 +51,17 @@ namespace ninebot_algo{
             /**
              * Receive cmd from linux control 
              */ 
-            int reply(int& cmd);
+            // int reply(int& cmd);
 
         private:
-            void *m_context;
-            void *m_reply;
-            char m_endpoint[100];
-            std::string m_ip;
-            std::string m_msgType; // in order to determine port
+            // void *m_context;
+            // void *m_reply;
+            // char m_endpoint[100];
+            // std::string m_ip;
+            // std::string m_msgType; // in order to determine port
             //zmq_msg_t m_recvMsg;
             //long recv_fail_count;
+            void* m_replier;
         };
         
     } // namespace nb_zmq

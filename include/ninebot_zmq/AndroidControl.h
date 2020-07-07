@@ -11,14 +11,10 @@ namespace ninebot_algo{
     namespace nb_zmq{
 
         class AndroidControl{
-        public:
-            AndroidControl();
+        public:            
+            AndroidControl(void* context, const std::string& ip, const std::string& msgType);
             
             ~AndroidControl();
-
-            int init(const std::string& ip, const std::string& msgType);
-            
-            void close();
 
             CtrlStatus getLinuxCtrlStatus();
             
@@ -35,11 +31,11 @@ namespace ninebot_algo{
             int reconnectAndroidNode();
             
         private:
-            void* m_context;
+            // void* m_context;
             void* m_reply;
-            char m_endpoint[100];
-            std::string m_ip;
-            std::string m_msgType; // in order to determine port
+            // char m_endpoint[100];
+            // std::string m_ip;
+            // std::string m_msgType; // in order to determine port
             
             CtrlStatus m_linuxCtrlstatus;
 

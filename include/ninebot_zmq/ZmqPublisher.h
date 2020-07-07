@@ -15,13 +15,15 @@ namespace ninebot_algo{
     namespace nb_zmq{
         class ZmqPublisher {
         public:
-            ZmqPublisher();
+            ZmqPublisher(void* context, const std::string& ip, const std::string& msgType);
+
             ~ZmqPublisher();
             
-            void close();
+            void closeSocket();
 
-            int init(const std::string& ip, const std::string& msgType);
-            
+            // Each kind of msg type, need one unique socket
+            // void* initSocket(const std::string& ip, const std::string& msgType);
+
             int publish(FrameStampedImageWithPose *framePtr, const std::string& topicStr);
 
             int publish(FrameStampedLidarScan *framePtr, const std::string& topicStr);
@@ -33,10 +35,9 @@ namespace ninebot_algo{
             int publish(Segway_proto::StampedPose3Dd *protoMsgPtr, const std::string& topicStr);
 
         private:
-            void *m_context;
-            void *m_publisher;
-            std::string m_ip;
-            std::string m_msgType; // in order to determine port
+            // void* m_context;
+            //std::string m_ip;
+            void* m_publisher;
         };
 
     } // namespace nb_zmq

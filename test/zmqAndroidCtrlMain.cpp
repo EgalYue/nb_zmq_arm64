@@ -3,18 +3,18 @@
 using namespace ninebot_algo;
 
 
-void threadRun(nb_zmq::AndroidControl& androidCtrl, std::string ip, std::string msgType){
+void threadRun(std::shared_ptr<nb_zmq::AndroidControl> androidCtrlPtr, std::string ip, std::string msgType){
     if (CTRL == msgType){
-        serverCase::androidCtrl_case(androidCtrl, 1000);
+        serverCase::androidCtrl_case(androidCtrlPtr, 1000);
     }
 }
 
-void threadClose(nb_zmq::AndroidControl& androidCtrl){
+void threadClose(std::shared_ptr<nb_zmq::AndroidControl> androidCtrl){
     while (true) {
         usleep(5000000); // 5s
         break;
     }
-    androidCtrl.close();
+    //TODO...
 }
 
 int main(int argc, char *argv[]) {
@@ -24,16 +24,13 @@ int main(int argc, char *argv[]) {
         return -1;
     }
     std::cout << "=== This is zmqAndroidCtrl... ===" << std::endl;
-    nb_zmq::AndroidControl androidCtrl;
     std::string ip = argv[1]; // "tcp://127.0.0.1";
     std::string msgType = argv[2];
-    if(androidCtrl.init(ip, msgType) < 0){
-        std::cout<< "[ZMQ AndroidCtrl]: Error can not bind endpoint!"<< std::endl;
-        return -1;
-    }
+    nb_zmq::NodeHandle nh;
+    auto androidCtrlPtr = nh.createAndroidCtrl(ip, msgType);
 
-    std::thread th_run(threadRun, std::ref(androidCtrl), ip, msgType);
-    std::thread th_close(threadClose, std::ref(androidCtrl));
+    std::thread th_run(threadRun, androidCtrlPtr, ip, msgType);
+    std::thread th_close(threadClose, androidCtrlPtr);
 
 
     if (th_close.joinable()){

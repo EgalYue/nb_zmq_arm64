@@ -12,18 +12,11 @@ namespace ninebot_algo{
 
         class LinuxControl{
         public:
-            LinuxControl();
-            
+            LinuxControl(void* context, const std::string& ip, const std::string& msgType);
+
             ~LinuxControl();
 
             int init(const std::string& ip, const std::string& msgType);
-
-            /**
-             * IPC
-             */   
-            int init();
-
-            void close();
 
             int reconnect();
 
@@ -34,16 +27,11 @@ namespace ninebot_algo{
              */
             int requestHeartBeat(Segway_proto::HeartbeatCmd* protoMsgPtr, long timeout);
 
-            /**
-             * Send cmd to linux comm part
-             */
-            int sendCmd(int cmd); 
-
         private:
-            void *m_context;
+            // void *m_context;
             void *m_request;
-            std::string m_ip;
-            std::string m_msgType; // in order to determine port
+            // std::string m_ip;
+            // std::string m_msgType; // in order to determine port
 
             CtrlStatus m_androidCtrlstatus;
         };

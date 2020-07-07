@@ -5,18 +5,18 @@ using namespace ninebot_algo;
 
 
 
-void threadRun(nb_zmq::LinuxControl& linuxCtrl, std::string ip, std::string msgType){
+void threadRun(std::shared_ptr<nb_zmq::LinuxControl> linuxCtrl, std::string ip, std::string msgType){
     if (CTRL == msgType){
         clientCase::linuxCtrl_case(linuxCtrl, 1000);
     }
 }
 
-void threadClose(nb_zmq::LinuxControl& linuxCtrl){
+void threadClose(std::shared_ptr<nb_zmq::LinuxControl> linuxCtrl){
     while (true) {
         usleep(5000000); // 5s
         break;
     }
-    linuxCtrl.close();
+    //TODO...
 }
 
 int main(int argc, char *argv[]) {
@@ -26,16 +26,13 @@ int main(int argc, char *argv[]) {
         return -1;
     }
     std::cout << "=== This is zmqLinuxCtrl... ===" << std::endl;
-    nb_zmq::LinuxControl linuxCtrl;
     std::string ip = argv[1]; // "tcp://127.0.0.1";
     std::string msgType = argv[2];
-    if(linuxCtrl.init(ip, msgType) < 0){
-        std::cout<< "[ZMQ Client]: Error can not connect to endpoint! " << std::endl;
-        return -1;
-    }
+    nb_zmq::NodeHandle nh;
+    auto linuxCtrlPtr = nh.createLinuxCtrl(ip, msgType);
 
-    std::thread th_run(threadRun, std::ref(linuxCtrl), ip, msgType);
-    std::thread th_close(threadClose, std::ref(linuxCtrl));
+    std::thread th_run(threadRun, linuxCtrlPtr, ip, msgType);
+    std::thread th_close(threadClose, linuxCtrlPtr);
 
 
     if (th_close.joinable()){

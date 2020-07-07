@@ -11,12 +11,11 @@ namespace ninebot_algo{
     namespace nb_zmq{
         class ZmqReqClient {
         public:
-            ZmqReqClient();
+            ZmqReqClient(void* context, const std::string& ip, const std::string& msgType);
+
             ~ZmqReqClient();
 
-            int init(const std::string& ip, const std::string& msgType);
-
-            void close();
+            void closeSocket();
 
             void setStopSignal(bool stopSignal);
 
@@ -43,12 +42,9 @@ namespace ninebot_algo{
             int request(std::string& serverIP);
 
         private:
-            void *m_context;
-            void *m_request;
-            std::string m_ip;
-            std::string m_msgType; // in order to determine port
-            //zmq_msg_t m_recvMsg;
-            //long recv_fail_count;
+            // void *m_context;
+            // std::string m_ip;
+            void* m_requester;
         };
     } // namespace nb_zmq
 } // namespace ninebot_algo

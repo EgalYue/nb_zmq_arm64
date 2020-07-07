@@ -5,24 +5,27 @@ using namespace ninebot_algo;
 
 
 
-void threadRun(nb_zmq::ZmqReqClient& zmqReqClient, std::string ip, std::string msgType){
+void threadRun(std::shared_ptr<nb_zmq::ZmqReqClient> zmqReqClientPtr, std::string ip, std::string msgType){
     while(1){
         if (SlamStartup == msgType){
-            if (clientCase::SlamStartup_case(zmqReqClient) < 0) break;
+            if (clientCase::SlamStartup_case(zmqReqClientPtr) < 0) break;
         } else if (ResponseError == msgType || ResponseMap == msgType || ResponsePose == msgType){
-            if (clientCase::Response_case(zmqReqClient) < 0) break;
+            if (clientCase::Response_case(zmqReqClientPtr) < 0) break;
         } else if (IP == msgType){
-            if (clientCase::IP_case(zmqReqClient) < 0) break;
+            if (clientCase::IP_case(zmqReqClientPtr) < 0) break;
         }
     }
+
+    std::cout<< ">>> Closing socket..." << std::endl;
+    zmqReqClientPtr->closeSocket(); 
 }
 
-void threadClose(nb_zmq::ZmqReqClient& zmqReqClient){
+void threadClose(std::shared_ptr<nb_zmq::ZmqReqClient> zmqReqClientPtr){
     while (true) {
         usleep(5000000); // 5s
         break;
     }
-    zmqReqClient.close();
+    //TODO CLOSE signal?
 }
 
 int main(int argc, char *argv[]) {
@@ -32,16 +35,14 @@ int main(int argc, char *argv[]) {
         return -1;
     }
     std::cout << "=== This is zmqReqClient... ===" << std::endl;
-    nb_zmq::ZmqReqClient zmqReqClient;
     std::string ip = argv[1]; // "tcp://127.0.0.1";
     std::string msgType = argv[2];
-    if(zmqReqClient.init(ip, msgType) < 0){
-        std::cout<< "[ZMQ Client]: Error can not connect to endpoint! " << std::endl;
-        return -1;
-    }
 
-    std::thread th_run(threadRun, std::ref(zmqReqClient), ip, msgType);
-    std::thread th_close(threadClose, std::ref(zmqReqClient));
+    nb_zmq::NodeHandle nh;
+    auto zmqReqClientPtr = nh.createReqClient(ip, msgType);
+
+    std::thread th_run(threadRun, zmqReqClientPtr, ip, msgType);
+    std::thread th_close(threadClose, zmqReqClientPtr);
 
 
     if (th_close.joinable()){

@@ -2,50 +2,62 @@
 #include <thread>
 
 using namespace ninebot_algo;
+static bool g_closeSignal = false;
 
 
 
-void threadSub(nb_zmq::ZmqSubscriber& mq_recv, std::string ip, std::string msgType, std::string topic){
+void threadSub(std::shared_ptr<nb_zmq::ZmqSubscriber> mq_recv, std::string topic){
+
     if (StampedImageWithPose == topic) {
         while(1){
-            if (subCase::Image_case(mq_recv, topic, false) < 0){
+            subCase::Image_case(mq_recv, topic);
+            if (g_closeSignal){
                 break;
-            }
+            }    
         }
     } else if (StampedLidarScan == topic) {
         while(1){
-            if (subCase::StampedLidarScan_case(mq_recv, topic, false) < 0){
+            subCase::StampedLidarScan_case(mq_recv, topic);
+            if (g_closeSignal){
                 break;
-            }
+            }   
         }
     } else if (StampedIMU == topic) {
         while(1){
-            if(subCase::StampedIMU_case(mq_recv, topic, false) < 0){
+            subCase::StampedIMU_case(mq_recv, topic);
+            if (g_closeSignal){
                 break;
             }
         }  
     } else if (StampedEncoderData == topic) {
         while(1){
-            if(subCase::StampedEncoderData_case(mq_recv, topic, false) < 0){
+            subCase::StampedEncoderData_case(mq_recv, topic);
+            if (g_closeSignal){
                 break;
-            }
+            }   
         }
     } else if (StampedPose3Dd == topic) {
         while(1){
-            if(subCase::StampedPose3Dd_case(mq_recv, topic, false) < 0){
+            subCase::StampedPose3Dd_case(mq_recv, topic);
+            if (g_closeSignal){
                 break;
-            }
+            }   
         }
-    } 
+    }
+    
+    std::cout<< ">>> Closing socket..." << std::endl;
+    mq_recv->closeSocket(); //TODO... !!!!
 }
 
-void* threadClose(nb_zmq::ZmqSubscriber& mq_recv){
+void threadClose(std::shared_ptr<nb_zmq::ZmqSubscriber>  mq_recv){
     while (true) {
-        usleep(5000000); // 10s
+        usleep(30000000); // 5s
         break;
     }
-    mq_recv.close();
+    mq_recv->terminateBlocking();   
+    g_closeSignal = true;
 }
+
 
 int main(int argc, char *argv[]) {
     if (argc < 4){
@@ -59,20 +71,18 @@ int main(int argc, char *argv[]) {
     std::string msgType = argv[2]; // "StampedImageWithPose"
     std::string topic = argv[3];
 
-    nb_zmq::ZmqSubscriber mq_recv;
-    if(mq_recv.init(ip, msgType) < 0){
-        std::cout << "[ZMQ Subscriber]: Error can not connect to endpoint!" << std::endl;
-        return -1;
-    }
+    nb_zmq::NodeHandle nh;
+    auto mq_recvPtr = nh.createSubscriber(ip, msgType);
 
-    std::thread th_sub(threadSub, std::ref(mq_recv), ip, msgType, topic);
-    std::thread th_close(threadClose, std::ref(mq_recv));
+    std::thread th_sub(threadSub, mq_recvPtr, topic);
+    std::thread th_close(threadClose, mq_recvPtr);
 
-    if (th_close.joinable()){
-        th_close.join();
-    }
+
     if (th_sub.joinable()){
         th_sub.join();
+    }
+    if (th_close.joinable()){
+        th_close.join();
     }
 
     std::cout<< " --- end ---" << std::endl;
