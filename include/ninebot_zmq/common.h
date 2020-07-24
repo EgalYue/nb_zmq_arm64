@@ -16,18 +16,20 @@
 namespace ninebot_algo{
     namespace nb_zmq{
 
-        // Unique Port for pub all kinds of msg as sequence
-        extern const std::string AllType;
-
         // Following are used for zmq Pub/Sub mode
         extern const std::string StampedImageWithPose;
         extern const std::string StampedIMU;
         extern const std::string StampedLidarScan;
         extern const std::string StampedEncoderData;
-        extern const std::string StampedPose3Dd;
+        extern const std::string StampedLocalization;
+        extern const std::string StampedOdomLocalization;
+        extern const std::string StampedSlamLocalization;
+        extern const std::string TsWithID;
+        extern const std::string Ts2WithID;
 
         // Following are used for zmq Req/Rep mode
-        extern const std::string SlamStartup;
+        extern const std::string SlamConfig;
+        extern const std::string Response;
         extern const std::string ResponseMap;
         extern const std::string ResponsePose;
         extern const std::string ResponseError;
@@ -45,8 +47,9 @@ namespace ninebot_algo{
 
 
         // Others
-        extern const std::string IPC_linux_addr;
-        extern const std::string IPC_CTRL_CHANNEL;
+        extern const std::string IPC_CTRL_CHANNEL_SUB;
+        extern const std::string IPC_CTRL_CHANNEL_REP;
+        extern const std::string IPC_CTRL_CHANNEL_REQ;
 
         /**
          * Get ip of current device

@@ -2,22 +2,25 @@
 #define NINEBOT_ZMQ_ZMQREPSERVER_H
 
 #include "ninebot_zmq/util.h"
-#include <zmq.h>
 
 
 
 
 namespace ninebot_algo{
     namespace nb_zmq{
+
+        
         class ZmqRepServer {
         public:
             ZmqRepServer(void* context, const std::string& ip, const std::string& msgType);
 
             ~ZmqRepServer();
 
-            void closeSocket();
+            int init();
 
-            // int init(const std::string& ip, const std::string& msgType);
+            int reconnect();
+
+            void closeSocket();
 
             /**
              * IPC 
@@ -28,40 +31,51 @@ namespace ninebot_algo{
 
             bool getStopSignal();
             
-            void reconnect();
-            
             /**
-             * Receive "SlamStartup" string from client.
-             * Reply SlamStartup proto as response
+             * Receive "SlamConfig" string from client.
+             * Reply SlamConfig proto as response
              */
-            int reply(Segway_proto::SlamStartup* protoMsgPtr);
+            int reply(Segway_proto::SlamConfig* protoMsgPtr, long timeout=-1);
 
             /**
              * Receive Response proto from client. Saved in protoMsgPtr
              * Reply "OK" string as response
              */
-            int reply(Segway_proto::Response* protoMsgPtr);
+            int reply(Segway_proto::Response* protoMsgPtr, long timeout=-1);
 
             /**
              * Receive IP request "ip" from client
              * Reply server's ip (string) as response
              */
-            int reply(std::string& serverIP);
+            int reply(std::string& serverIP, long timeout=-1);
 
             /**
              * Receive cmd from linux control 
              */ 
             // int reply(int& cmd);
 
+            /**
+             * Send Terminate signal
+             */  
+            int terminateBlocking();
+
         private:
-            // void *m_context;
-            // void *m_reply;
+            ZmqRepServer(const ZmqRepServer &) = delete;
+            void operator=(const ZmqRepServer &) = delete;
+            /**
+             * Receive Terminate signal
+             */
+            int executeTerminateCmd();
+
+            void *m_context;
+            void* m_replier;
+            void* m_ctrlPuller;
             // char m_endpoint[100];
-            // std::string m_ip;
-            // std::string m_msgType; // in order to determine port
+            std::string m_ip;
+            std::string m_msgType; // in order to determine port
             //zmq_msg_t m_recvMsg;
             //long recv_fail_count;
-            void* m_replier;
+
         };
         
     } // namespace nb_zmq

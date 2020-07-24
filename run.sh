@@ -1,12 +1,5 @@
-cd build
+#!/bin/bash
 
-for i in {1..100}  
-do  
-echo "===================="  $i;  
+cd /home/linaro/nb_zmq_arm64/build
 
-./zmqRepServer tcp://127.0.0.1 SlamStartup
-done 
-
-
-
-cd ..
+./stress_testing tcp://192.168.0.103 tcp://192.168.0.1 5&

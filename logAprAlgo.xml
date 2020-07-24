@@ -1,0 +1,6 @@
+ <root>
+     <!-- This is a sample comment -->
+     <LEVEL>5</LEVEL>
+     <LOG_FILENAME>/sdcard/log.txt</LOG_FILENAME>
+     <!-- TAG_FILTER>ZMQTEST</TAG_FILTER -->
+ </root>

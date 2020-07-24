@@ -1,21 +1,14 @@
 #include "testCase.h"
-#include "ninebot_zmq/Control.h"
 #include <thread>
 
 using namespace ninebot_algo;
 
 
+static bool g_closeSignal = false;
 static bool g_bClosePublish = false;
-static bool g_bCloseSubscribe = false;
 
-void threadPub(std::string msgType, std::string topic){
-    nb_zmq::ZmqPublisher mq_pub;
-    std::string ipPub = "tcp://*"; // localhost as default
-    if(mq_pub.init(ipPub, msgType) < 0){
-        std::cout << "[ZMQ Pulisher]: Error can not bind endpoint !" << std::endl; 
-        return;
-    }
 
+void threadPub(std::shared_ptr<nb_zmq::ZmqPublisher> mq_pub, std::string topic){
     if (StampedImageWithPose == topic) {
         //pubCase::Image_case(mq_pub, filepath, topic);
         int frame_id = 0;
@@ -24,7 +17,6 @@ void threadPub(std::string msgType, std::string topic){
             pubCase::Image_case(mq_pub, topic, frame_id);
             frame_id++;
         }
-        mq_pub.close();
     } else if (StampedIMU == topic) {
         int frame_id = 0;
         while(!g_bClosePublish){
@@ -32,7 +24,6 @@ void threadPub(std::string msgType, std::string topic){
             pubCase::StampedIMU_case(mq_pub, topic, frame_id);
             frame_id++;
         }
-        mq_pub.close();
     } else if (StampedLidarScan == topic) {
         int frame_id = 0;
         while(!g_bClosePublish){
@@ -40,7 +31,6 @@ void threadPub(std::string msgType, std::string topic){
             pubCase::StampedLidarScan_case(mq_pub, topic, frame_id);
             frame_id++;
         }
-        mq_pub.close();
     } else if (StampedEncoderData == topic) {
         int frame_id = 0;
         while(!g_bClosePublish){
@@ -48,79 +38,96 @@ void threadPub(std::string msgType, std::string topic){
             pubCase::StampedEncoderData_case(mq_pub, topic, frame_id);
             frame_id++;
         }
-        mq_pub.close();
-    } else if (StampedPose3Dd == topic) {
+    } else if (StampedLocalization == topic) {
         int frame_id = 0;
         while(!g_bClosePublish){
-            usleep(50000); // 20Hz
-            pubCase::StampedPose3Dd_case(mq_pub, topic, frame_id);
+            usleep(50000); // 20Hz   
+            pubCase::StampedLocalization_case(mq_pub, topic, frame_id);
             frame_id++;
         }
-        mq_pub.close();
-    } 
+    } else if (TsWithID == topic) {
+        int64_t frame_id = 0;
+        while(!g_bClosePublish){
+            usleep(50000); // 20Hz   
+            pubCase::TsWithID_case(mq_pub, topic, frame_id);
+            frame_id++;
+        }
+    } else if (Ts2WithID == topic) {
+        int64_t frame_id = 0;
+        while(!g_bClosePublish){
+            usleep(60000000); // 20Hz   
+            pubCase::Ts2WithID_case(mq_pub, topic, frame_id);
+            frame_id++;
+        }
+    }
 }
 
 
-void threadSub(std::string ipSub, std::string msgType, std::string topic){
-    nb_zmq::ZmqSubscriber mq_recv;
-    if(mq_recv.init(ipSub, msgType) < 0){
-        std::cout << "[ZMQ Subscriber]: Error can not connect to endpoint!" << std::endl;
-        return;
-    }
+void threadSub(std::shared_ptr<nb_zmq::ZmqSubscriber> mq_recv, std::string topic){
 
     if (StampedImageWithPose == topic) {
-        int nRecvFailCount = 0;
-        while(!g_bCloseSubscribe){
-            subCase::Image_case(mq_recv, topic, true);
+        while(1){
+            subCase::Image_case(mq_recv, topic);
+            if (g_closeSignal){
+                break;
+            }    
         }
-        mq_recv.close();
-    } else if (StampedIMU == topic) {
-        int nRecvFailCount = 0;
-        while(!g_bCloseSubscribe){
-            subCase::StampedIMU_case(mq_recv, topic, true);
-        }
-        mq_recv.close();
     } else if (StampedLidarScan == topic) {
-        int nRecvFailCount = 0;
-        while(!g_bCloseSubscribe){
-            subCase::StampedLidarScan_case(mq_recv, topic, true);
+        while(1){
+            subCase::StampedLidarScan_case(mq_recv, topic);
+            if (g_closeSignal){
+                break;
+            }   
         }
-        mq_recv.close();
+    } else if (StampedIMU == topic) {
+        while(1){
+            subCase::StampedIMU_case(mq_recv, topic);
+            if (g_closeSignal){
+                break;
+            }
+        }  
     } else if (StampedEncoderData == topic) {
-        int nRecvFailCount = 0;
-        while(!g_bCloseSubscribe){
-            subCase::StampedEncoderData_case(mq_recv, topic, true);
+        while(1){
+            subCase::StampedEncoderData_case(mq_recv, topic);
+            if (g_closeSignal){
+                break;
+            }   
         }
-        mq_recv.close();
-    } else if (StampedPose3Dd == topic) {
-        int nRecvFailCount = 0;
-        while(!g_bCloseSubscribe){
-            subCase::StampedPose3Dd_case(mq_recv, topic, true);
+    } else if (StampedLocalization == topic) {
+        while(1){
+            subCase::StampedLocalization_case(mq_recv, topic);
+            if (g_closeSignal){
+                break;
+            }   
         }
-        mq_recv.close();
-    } 
-}
-
-
-void* threadClosePub(){
-    while (true) {
-        usleep(10000000); // 10s
-        break;
+    } else if (TsWithID == topic) {
+        while(1){
+            subCase::TsWithID_case(mq_recv, topic);
+            if (g_closeSignal){
+                break;
+            }   
+        }
+    } else if (Ts2WithID == topic) {
+        while(1){
+            subCase::Ts2WithID_case(mq_recv, topic);
+            if (g_closeSignal){
+                break;
+            }   
+        }
     }
-
-    nb_zmq::Control ctl;
-    g_bClosePublish = ctl.close();
+    
+    std::cout<< ">>> Closing socket..." << std::endl;
+    mq_recv->closeSocket(); //TODO... !!!!
 }
 
 
-void* threadCloseSub(){
+void threadCloseSub(){
     while (true) {
         usleep(15000000); // 10s
         break;
     }
 
-    nb_zmq::Control ctl;
-    g_bCloseSubscribe = ctl.close();
+  //TODO
 }
 
 
@@ -140,20 +147,15 @@ int main(int argc, char *argv[]) {
     std::string ipSub = argv[1]; // "tcp://127.0.0.1";
     std::string msgType = argv[2];
     std::string topic = argv[3];
-    
-    g_bClosePublish = false;
-    g_bCloseSubscribe = false;
-    std::thread th_pub(threadPub, msgType, topic);
-    std::thread th_sub(threadSub, ipSub, msgType, topic);
-    std::thread th_close_pub(threadClosePub);
-    std::thread th_close_sub(threadCloseSub);
 
-    if (th_close_pub.joinable()){
-        th_close_pub.join();
-    }
-    if (th_close_sub.joinable()){
-        th_close_sub.join();
-    }
+    std::string ipPub = "tcp://*"; // localhost as default
+    nb_zmq::NodeHandle nh;
+    auto zmqPubPtr = nh.createPublisher(ipPub, msgType);
+    auto zmqSubPtr = nh.createSubscriber(ipSub, msgType);
+
+    std::thread th_pub(threadPub, zmqPubPtr, topic);
+    std::thread th_sub(threadSub, zmqSubPtr, topic);
+
     if (th_pub.joinable()){
         th_pub.join();
     }

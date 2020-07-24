@@ -2,22 +2,30 @@
 #include <thread>
 
 using namespace ninebot_algo;
+static bool g_closeSignal = false;
 
 
 
 void threadRun(std::shared_ptr<nb_zmq::ZmqReqClient> zmqReqClientPtr, std::string ip, std::string msgType){
-    while(1){
-        if (SlamStartup == msgType){
-            if (clientCase::SlamStartup_case(zmqReqClientPtr) < 0) break;
-        } else if (ResponseError == msgType || ResponseMap == msgType || ResponsePose == msgType){
-            if (clientCase::Response_case(zmqReqClientPtr) < 0) break;
-        } else if (IP == msgType){
-            if (clientCase::IP_case(zmqReqClientPtr) < 0) break;
+    if (SlamConfig == msgType){
+        while(1){
+            clientCase::SlamConfig_case(zmqReqClientPtr);
+            if (g_closeSignal) break;
+        }
+    } else if (ResponseError == msgType || ResponseMap == msgType || ResponsePose == msgType){
+        while(1){
+            clientCase::Response_case(zmqReqClientPtr);
+            if (g_closeSignal) break;
+        }
+    } else if (IP == msgType){
+        while(1){
+            clientCase::IP_case(zmqReqClientPtr);
+            if (g_closeSignal) break;
         }
     }
 
     std::cout<< ">>> Closing socket..." << std::endl;
-    zmqReqClientPtr->closeSocket(); 
+    // zmqReqClientPtr->closeSocket(); 
 }
 
 void threadClose(std::shared_ptr<nb_zmq::ZmqReqClient> zmqReqClientPtr){
@@ -25,13 +33,14 @@ void threadClose(std::shared_ptr<nb_zmq::ZmqReqClient> zmqReqClientPtr){
         usleep(5000000); // 5s
         break;
     }
-    //TODO CLOSE signal?
+    zmqReqClientPtr->terminateBlocking();
+    g_closeSignal = true;
 }
 
 int main(int argc, char *argv[]) {
     if (argc < 2){
         std::cout<< "Usage: zmqReqClient [ip] [msgType]" << std::endl;
-        std::cout<< "Ex: zmqReqClient tcp://127.0.0.1 SlamStartup" << std::endl;
+        std::cout<< "Ex: zmqReqClient tcp://127.0.0.1 SlamConfig" << std::endl;
         return -1;
     }
     std::cout << "=== This is zmqReqClient... ===" << std::endl;

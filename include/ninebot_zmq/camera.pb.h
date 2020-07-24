@@ -47,7 +47,7 @@ struct TableStruct_ninebot_5fzmq_2fcamera_2eproto {
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
   static const ::PROTOBUF_NAMESPACE_ID::internal::AuxillaryParseTableField aux[]
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
-  static const ::PROTOBUF_NAMESPACE_ID::internal::ParseTable schema[1]
+  static const ::PROTOBUF_NAMESPACE_ID::internal::ParseTable schema[2]
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
   static const ::PROTOBUF_NAMESPACE_ID::internal::FieldMetadata field_metadata[];
   static const ::PROTOBUF_NAMESPACE_ID::internal::SerializationTable serialization_table[];
@@ -55,34 +55,38 @@ struct TableStruct_ninebot_5fzmq_2fcamera_2eproto {
 };
 extern const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_ninebot_5fzmq_2fcamera_2eproto;
 namespace Segway_proto {
-class Camera;
-class CameraDefaultTypeInternal;
-extern CameraDefaultTypeInternal _Camera_default_instance_;
+class CameraExtrinsics;
+class CameraExtrinsicsDefaultTypeInternal;
+extern CameraExtrinsicsDefaultTypeInternal _CameraExtrinsics_default_instance_;
+class CameraIntrinsics;
+class CameraIntrinsicsDefaultTypeInternal;
+extern CameraIntrinsicsDefaultTypeInternal _CameraIntrinsics_default_instance_;
 }  // namespace Segway_proto
 PROTOBUF_NAMESPACE_OPEN
-template<> ::Segway_proto::Camera* Arena::CreateMaybeMessage<::Segway_proto::Camera>(Arena*);
+template<> ::Segway_proto::CameraExtrinsics* Arena::CreateMaybeMessage<::Segway_proto::CameraExtrinsics>(Arena*);
+template<> ::Segway_proto::CameraIntrinsics* Arena::CreateMaybeMessage<::Segway_proto::CameraIntrinsics>(Arena*);
 PROTOBUF_NAMESPACE_CLOSE
 namespace Segway_proto {
 
 // ===================================================================
 
-class Camera :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Segway_proto.Camera) */ {
+class CameraIntrinsics :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Segway_proto.CameraIntrinsics) */ {
  public:
-  Camera();
-  virtual ~Camera();
+  CameraIntrinsics();
+  virtual ~CameraIntrinsics();
 
-  Camera(const Camera& from);
-  Camera(Camera&& from) noexcept
-    : Camera() {
+  CameraIntrinsics(const CameraIntrinsics& from);
+  CameraIntrinsics(CameraIntrinsics&& from) noexcept
+    : CameraIntrinsics() {
     *this = ::std::move(from);
   }
 
-  inline Camera& operator=(const Camera& from) {
+  inline CameraIntrinsics& operator=(const CameraIntrinsics& from) {
     CopyFrom(from);
     return *this;
   }
-  inline Camera& operator=(Camera&& from) noexcept {
+  inline CameraIntrinsics& operator=(CameraIntrinsics&& from) noexcept {
     if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
       if (this != &from) InternalSwap(&from);
     } else {
@@ -100,34 +104,34 @@ class Camera :
   static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
     return GetMetadataStatic().reflection;
   }
-  static const Camera& default_instance();
+  static const CameraIntrinsics& default_instance();
 
   static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
-  static inline const Camera* internal_default_instance() {
-    return reinterpret_cast<const Camera*>(
-               &_Camera_default_instance_);
+  static inline const CameraIntrinsics* internal_default_instance() {
+    return reinterpret_cast<const CameraIntrinsics*>(
+               &_CameraIntrinsics_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
     0;
 
-  void Swap(Camera* other);
-  friend void swap(Camera& a, Camera& b) {
+  void Swap(CameraIntrinsics* other);
+  friend void swap(CameraIntrinsics& a, CameraIntrinsics& b) {
     a.Swap(&b);
   }
 
   // implements Message ----------------------------------------------
 
-  inline Camera* New() const final {
-    return CreateMaybeMessage<Camera>(nullptr);
+  inline CameraIntrinsics* New() const final {
+    return CreateMaybeMessage<CameraIntrinsics>(nullptr);
   }
 
-  Camera* New(::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
-    return CreateMaybeMessage<Camera>(arena);
+  CameraIntrinsics* New(::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
+    return CreateMaybeMessage<CameraIntrinsics>(arena);
   }
   void CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
   void MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
-  void CopyFrom(const Camera& from);
-  void MergeFrom(const Camera& from);
+  void CopyFrom(const CameraIntrinsics& from);
+  void MergeFrom(const CameraIntrinsics& from);
   PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
   bool IsInitialized() const final;
 
@@ -148,10 +152,10 @@ class Camera :
   inline void SharedCtor();
   inline void SharedDtor();
   void SetCachedSize(int size) const final;
-  void InternalSwap(Camera* other);
+  void InternalSwap(CameraIntrinsics* other);
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "Segway_proto.Camera";
+    return "Segway_proto.CameraIntrinsics";
   }
   private:
   inline ::PROTOBUF_NAMESPACE_ID::Arena* GetArenaNoVirtual() const {
@@ -199,7 +203,7 @@ class Camera :
   std::string* release_model();
   void set_allocated_model(std::string* model);
 
-  // @@protoc_insertion_point(class_scope:Segway_proto.Camera)
+  // @@protoc_insertion_point(class_scope:Segway_proto.CameraIntrinsics)
  private:
   class HasBitSetters;
 
@@ -207,6 +211,160 @@ class Camera :
   ::PROTOBUF_NAMESPACE_ID::RepeatedField< float > params_;
   mutable std::atomic<int> _params_cached_byte_size_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr model_;
+  mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  friend struct ::TableStruct_ninebot_5fzmq_2fcamera_2eproto;
+};
+// -------------------------------------------------------------------
+
+class CameraExtrinsics :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Segway_proto.CameraExtrinsics) */ {
+ public:
+  CameraExtrinsics();
+  virtual ~CameraExtrinsics();
+
+  CameraExtrinsics(const CameraExtrinsics& from);
+  CameraExtrinsics(CameraExtrinsics&& from) noexcept
+    : CameraExtrinsics() {
+    *this = ::std::move(from);
+  }
+
+  inline CameraExtrinsics& operator=(const CameraExtrinsics& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline CameraExtrinsics& operator=(CameraExtrinsics&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return GetMetadataStatic().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return GetMetadataStatic().reflection;
+  }
+  static const CameraExtrinsics& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const CameraExtrinsics* internal_default_instance() {
+    return reinterpret_cast<const CameraExtrinsics*>(
+               &_CameraExtrinsics_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    1;
+
+  void Swap(CameraExtrinsics* other);
+  friend void swap(CameraExtrinsics& a, CameraExtrinsics& b) {
+    a.Swap(&b);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline CameraExtrinsics* New() const final {
+    return CreateMaybeMessage<CameraExtrinsics>(nullptr);
+  }
+
+  CameraExtrinsics* New(::PROTOBUF_NAMESPACE_ID::Arena* arena) const final {
+    return CreateMaybeMessage<CameraExtrinsics>(arena);
+  }
+  void CopyFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
+  void MergeFrom(const ::PROTOBUF_NAMESPACE_ID::Message& from) final;
+  void CopyFrom(const CameraExtrinsics& from);
+  void MergeFrom(const CameraExtrinsics& from);
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  #if GOOGLE_PROTOBUF_ENABLE_EXPERIMENTAL_PARSER
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  #else
+  bool MergePartialFromCodedStream(
+      ::PROTOBUF_NAMESPACE_ID::io::CodedInputStream* input) final;
+  #endif  // GOOGLE_PROTOBUF_ENABLE_EXPERIMENTAL_PARSER
+  void SerializeWithCachedSizes(
+      ::PROTOBUF_NAMESPACE_ID::io::CodedOutputStream* output) const final;
+  ::PROTOBUF_NAMESPACE_ID::uint8* InternalSerializeWithCachedSizesToArray(
+      ::PROTOBUF_NAMESPACE_ID::uint8* target) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  inline void SharedCtor();
+  inline void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(CameraExtrinsics* other);
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "Segway_proto.CameraExtrinsics";
+  }
+  private:
+  inline ::PROTOBUF_NAMESPACE_ID::Arena* GetArenaNoVirtual() const {
+    return nullptr;
+  }
+  inline void* MaybeArenaPtr() const {
+    return nullptr;
+  }
+  public:
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+  private:
+  static ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadataStatic() {
+    ::PROTOBUF_NAMESPACE_ID::internal::AssignDescriptors(&::descriptor_table_ninebot_5fzmq_2fcamera_2eproto);
+    return ::descriptor_table_ninebot_5fzmq_2fcamera_2eproto.file_level_metadata[kIndexInFileMessages];
+  }
+
+  public:
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // repeated float rotation = 4;
+  int rotation_size() const;
+  void clear_rotation();
+  static const int kRotationFieldNumber = 4;
+  float rotation(int index) const;
+  void set_rotation(int index, float value);
+  void add_rotation(float value);
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedField< float >&
+      rotation() const;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedField< float >*
+      mutable_rotation();
+
+  // float x = 1;
+  void clear_x();
+  static const int kXFieldNumber = 1;
+  float x() const;
+  void set_x(float value);
+
+  // float y = 2;
+  void clear_y();
+  static const int kYFieldNumber = 2;
+  float y() const;
+  void set_y(float value);
+
+  // float z = 3;
+  void clear_z();
+  static const int kZFieldNumber = 3;
+  float z() const;
+  void set_z(float value);
+
+  // @@protoc_insertion_point(class_scope:Segway_proto.CameraExtrinsics)
+ private:
+  class HasBitSetters;
+
+  ::PROTOBUF_NAMESPACE_ID::internal::InternalMetadataWithArena _internal_metadata_;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedField< float > rotation_;
+  mutable std::atomic<int> _rotation_cached_byte_size_;
+  float x_;
+  float y_;
+  float z_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_ninebot_5fzmq_2fcamera_2eproto;
 };
@@ -219,92 +377,170 @@ class Camera :
   #pragma GCC diagnostic push
   #pragma GCC diagnostic ignored "-Wstrict-aliasing"
 #endif  // __GNUC__
-// Camera
+// CameraIntrinsics
 
 // string model = 1;
-inline void Camera::clear_model() {
+inline void CameraIntrinsics::clear_model() {
   model_.ClearToEmptyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
-inline const std::string& Camera::model() const {
-  // @@protoc_insertion_point(field_get:Segway_proto.Camera.model)
+inline const std::string& CameraIntrinsics::model() const {
+  // @@protoc_insertion_point(field_get:Segway_proto.CameraIntrinsics.model)
   return model_.GetNoArena();
 }
-inline void Camera::set_model(const std::string& value) {
+inline void CameraIntrinsics::set_model(const std::string& value) {
   
   model_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:Segway_proto.Camera.model)
+  // @@protoc_insertion_point(field_set:Segway_proto.CameraIntrinsics.model)
 }
-inline void Camera::set_model(std::string&& value) {
+inline void CameraIntrinsics::set_model(std::string&& value) {
   
   model_.SetNoArena(
     &::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
-  // @@protoc_insertion_point(field_set_rvalue:Segway_proto.Camera.model)
+  // @@protoc_insertion_point(field_set_rvalue:Segway_proto.CameraIntrinsics.model)
 }
-inline void Camera::set_model(const char* value) {
+inline void CameraIntrinsics::set_model(const char* value) {
   GOOGLE_DCHECK(value != nullptr);
   
   model_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:Segway_proto.Camera.model)
+  // @@protoc_insertion_point(field_set_char:Segway_proto.CameraIntrinsics.model)
 }
-inline void Camera::set_model(const char* value, size_t size) {
+inline void CameraIntrinsics::set_model(const char* value, size_t size) {
   
   model_.SetNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:Segway_proto.Camera.model)
+  // @@protoc_insertion_point(field_set_pointer:Segway_proto.CameraIntrinsics.model)
 }
-inline std::string* Camera::mutable_model() {
+inline std::string* CameraIntrinsics::mutable_model() {
   
-  // @@protoc_insertion_point(field_mutable:Segway_proto.Camera.model)
+  // @@protoc_insertion_point(field_mutable:Segway_proto.CameraIntrinsics.model)
   return model_.MutableNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
-inline std::string* Camera::release_model() {
-  // @@protoc_insertion_point(field_release:Segway_proto.Camera.model)
+inline std::string* CameraIntrinsics::release_model() {
+  // @@protoc_insertion_point(field_release:Segway_proto.CameraIntrinsics.model)
   
   return model_.ReleaseNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
-inline void Camera::set_allocated_model(std::string* model) {
+inline void CameraIntrinsics::set_allocated_model(std::string* model) {
   if (model != nullptr) {
     
   } else {
     
   }
   model_.SetAllocatedNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited(), model);
-  // @@protoc_insertion_point(field_set_allocated:Segway_proto.Camera.model)
+  // @@protoc_insertion_point(field_set_allocated:Segway_proto.CameraIntrinsics.model)
 }
 
 // repeated float params = 2;
-inline int Camera::params_size() const {
+inline int CameraIntrinsics::params_size() const {
   return params_.size();
 }
-inline void Camera::clear_params() {
+inline void CameraIntrinsics::clear_params() {
   params_.Clear();
 }
-inline float Camera::params(int index) const {
-  // @@protoc_insertion_point(field_get:Segway_proto.Camera.params)
+inline float CameraIntrinsics::params(int index) const {
+  // @@protoc_insertion_point(field_get:Segway_proto.CameraIntrinsics.params)
   return params_.Get(index);
 }
-inline void Camera::set_params(int index, float value) {
+inline void CameraIntrinsics::set_params(int index, float value) {
   params_.Set(index, value);
-  // @@protoc_insertion_point(field_set:Segway_proto.Camera.params)
+  // @@protoc_insertion_point(field_set:Segway_proto.CameraIntrinsics.params)
 }
-inline void Camera::add_params(float value) {
+inline void CameraIntrinsics::add_params(float value) {
   params_.Add(value);
-  // @@protoc_insertion_point(field_add:Segway_proto.Camera.params)
+  // @@protoc_insertion_point(field_add:Segway_proto.CameraIntrinsics.params)
 }
 inline const ::PROTOBUF_NAMESPACE_ID::RepeatedField< float >&
-Camera::params() const {
-  // @@protoc_insertion_point(field_list:Segway_proto.Camera.params)
+CameraIntrinsics::params() const {
+  // @@protoc_insertion_point(field_list:Segway_proto.CameraIntrinsics.params)
   return params_;
 }
 inline ::PROTOBUF_NAMESPACE_ID::RepeatedField< float >*
-Camera::mutable_params() {
-  // @@protoc_insertion_point(field_mutable_list:Segway_proto.Camera.params)
+CameraIntrinsics::mutable_params() {
+  // @@protoc_insertion_point(field_mutable_list:Segway_proto.CameraIntrinsics.params)
   return &params_;
+}
+
+// -------------------------------------------------------------------
+
+// CameraExtrinsics
+
+// float x = 1;
+inline void CameraExtrinsics::clear_x() {
+  x_ = 0;
+}
+inline float CameraExtrinsics::x() const {
+  // @@protoc_insertion_point(field_get:Segway_proto.CameraExtrinsics.x)
+  return x_;
+}
+inline void CameraExtrinsics::set_x(float value) {
+  
+  x_ = value;
+  // @@protoc_insertion_point(field_set:Segway_proto.CameraExtrinsics.x)
+}
+
+// float y = 2;
+inline void CameraExtrinsics::clear_y() {
+  y_ = 0;
+}
+inline float CameraExtrinsics::y() const {
+  // @@protoc_insertion_point(field_get:Segway_proto.CameraExtrinsics.y)
+  return y_;
+}
+inline void CameraExtrinsics::set_y(float value) {
+  
+  y_ = value;
+  // @@protoc_insertion_point(field_set:Segway_proto.CameraExtrinsics.y)
+}
+
+// float z = 3;
+inline void CameraExtrinsics::clear_z() {
+  z_ = 0;
+}
+inline float CameraExtrinsics::z() const {
+  // @@protoc_insertion_point(field_get:Segway_proto.CameraExtrinsics.z)
+  return z_;
+}
+inline void CameraExtrinsics::set_z(float value) {
+  
+  z_ = value;
+  // @@protoc_insertion_point(field_set:Segway_proto.CameraExtrinsics.z)
+}
+
+// repeated float rotation = 4;
+inline int CameraExtrinsics::rotation_size() const {
+  return rotation_.size();
+}
+inline void CameraExtrinsics::clear_rotation() {
+  rotation_.Clear();
+}
+inline float CameraExtrinsics::rotation(int index) const {
+  // @@protoc_insertion_point(field_get:Segway_proto.CameraExtrinsics.rotation)
+  return rotation_.Get(index);
+}
+inline void CameraExtrinsics::set_rotation(int index, float value) {
+  rotation_.Set(index, value);
+  // @@protoc_insertion_point(field_set:Segway_proto.CameraExtrinsics.rotation)
+}
+inline void CameraExtrinsics::add_rotation(float value) {
+  rotation_.Add(value);
+  // @@protoc_insertion_point(field_add:Segway_proto.CameraExtrinsics.rotation)
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedField< float >&
+CameraExtrinsics::rotation() const {
+  // @@protoc_insertion_point(field_list:Segway_proto.CameraExtrinsics.rotation)
+  return rotation_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedField< float >*
+CameraExtrinsics::mutable_rotation() {
+  // @@protoc_insertion_point(field_mutable_list:Segway_proto.CameraExtrinsics.rotation)
+  return &rotation_;
 }
 
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
 
 // @@protoc_insertion_point(namespace_scope)
 

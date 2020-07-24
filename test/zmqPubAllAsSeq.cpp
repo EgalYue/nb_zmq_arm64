@@ -1,11 +1,10 @@
 #include <thread>
 #include "testCase.h"
-#include "ninebot_zmq/Control.h"
 
 
 using namespace ninebot_algo;
 
-
+/*
 static bool g_bClosePublish = false;
 
 void threadPub(std::string& ip, std::string& msgType){
@@ -52,6 +51,7 @@ void threadClose(){
     nb_zmq::Control ctl;
     g_bClosePublish = ctl.close();
 }
+*/
 
 int main(int argc, char *argv[]) {
     if (argc < 2){
@@ -61,21 +61,43 @@ int main(int argc, char *argv[]) {
     }
     std::cout << "=== This is zmqPubAllAsSeq, using one port ... ===" << std::endl;
     std::string ip = argv[1]; // "tcp://127.0.0.1";
-    
-    {
-        g_bClosePublish = false;
-        std::string temp = AllType;
-        std::thread th_pub(threadPub, std::ref(ip), std::ref(temp));
-        std::thread th_close(threadClose);
 
-        if (th_close.joinable()){
-            th_close.join();
-        }
-        if (th_pub.joinable()) {
-        th_pub.join();
-        }
-        usleep(1000000);
+    nb_zmq::NodeHandle nh;
+    auto imagePuber = nh.createPublisher(ip, nb_zmq::StampedImageWithPose);
+    auto imuPuber = nh.createPublisher(ip, nb_zmq::StampedIMU);
+    auto lidarPuber = nh.createPublisher(ip, nb_zmq::StampedLidarScan);
+    auto encoderPuber = nh.createPublisher(ip, nb_zmq::StampedEncoderData);
+
+
+    
+    // {
+    //     g_bClosePublish = false;
+    //     std::string temp = AllType;
+    //     std::thread th_pub(threadPub, std::ref(ip), std::ref(temp));
+    //     std::thread th_close(threadClose);
+
+    //     if (th_close.joinable()){
+    //         th_close.join();
+    //     }
+    //     if (th_pub.joinable()) {
+    //     th_pub.join();
+    //     }
+    //     usleep(1000000);
+    // }
+    int frame_id = 0;
+    while(1){
+        usleep(100000); // 10Hz
+        std::string topic = StampedImageWithPose;
+        pubCase::Image_case(imagePuber, topic, frame_id);
+        topic = nb_zmq::StampedIMU;
+        pubCase::StampedIMU_case(imuPuber, topic, frame_id);
+        topic = nb_zmq::StampedLidarScan;
+        pubCase::StampedLidarScan_case(lidarPuber, topic, frame_id);
+        topic = nb_zmq::StampedEncoderData;
+        pubCase::StampedEncoderData_case(encoderPuber, topic, frame_id);
+        frame_id++;
     }
+
     
     std::cout<< " --- end ---" << std::endl;
     return 0;

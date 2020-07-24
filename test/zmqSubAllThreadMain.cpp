@@ -42,9 +42,9 @@ void threadSub(std::shared_ptr<nb_zmq::ZmqSubscriber> mq_recv, std::string topic
                 break;
             }   
         }
-    } else if (StampedPose3Dd == topic) {
+    } else if (StampedLocalization == topic) {
         while(1){
-            subCase::StampedPose3Dd_case(mq_recv, topic);
+            subCase::StampedLocalization_case(mq_recv, topic);
             if (g_bClosePose){
                 break;
             }   
@@ -92,13 +92,13 @@ int main(int argc, char *argv[]) {
     auto mq_recv_imu = nh.createSubscriber(ip, StampedIMU);
     auto mq_recv_lidar = nh.createSubscriber(ip, StampedLidarScan);
     auto mq_recv_encoder = nh.createSubscriber(ip, StampedEncoderData);
-    auto mq_recv_pose = nh.createSubscriber(ip, StampedPose3Dd);
+    auto mq_recv_pose = nh.createSubscriber(ip, StampedLocalization);
 
     std::thread th_subImage(threadSub, mq_recv_image, StampedImageWithPose);
     std::thread th_subIMU(threadSub, mq_recv_imu, StampedIMU);
     std::thread th_subLidar(threadSub, mq_recv_lidar, StampedLidarScan);
     // std::thread th_subEncoder(threadSub, mq_recv_encoder, StampedEncoderData);
-    // std::thread th_subPose(threadSub, mq_recv_pose, StampedPose3Dd);
+    // std::thread th_subPose(threadSub, mq_recv_pose, StampedLocalization);
 
     std::thread th_close_image(threadClose, mq_recv_image);
     std::thread th_close_imu(threadClose, mq_recv_imu);

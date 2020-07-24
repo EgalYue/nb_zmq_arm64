@@ -9,8 +9,8 @@ void run(std::string ip, std::string msgType){
         return;
     }
 
-    if (SlamStartup == msgType){
-        serverCase::SlamStartup_case(zmqRepServer);
+    if (SlamConfig == msgType){
+        serverCase::SlamConfig_case(zmqRepServer);
     } else if (ResponseError == msgType || ResponseMap == msgType || ResponsePose == msgType){
         serverCase::Response_case(zmqRepServer);
     } else if (IP == msgType){
@@ -28,8 +28,8 @@ int main(int argc, char *argv[]) {
     std::string ip = argv[1]; // "tcp://127.0.0.1";
     
     {   
-        std::cout<< "======== Server SlamStartup ========"<<std::endl;
-        run(ip, SlamStartup);
+        std::cout<< "======== Server SlamConfig ========"<<std::endl;
+        run(ip, SlamConfig);
         usleep(1000000);
     }
 

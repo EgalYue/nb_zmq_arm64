@@ -6,7 +6,6 @@
 #include <string>
 
 #include "ninebot_zmq/util.h"
-#include <zmq.h>
 #include <type_traits>
 
 
@@ -32,9 +31,14 @@ namespace ninebot_algo{
 
             int publish(Segway_proto::StampedEncoderData *protoMsgPtr, const std::string& topicStr);
 
-            int publish(Segway_proto::StampedPose3Dd *protoMsgPtr, const std::string& topicStr);
+            int publish(Segway_proto::StampedLocalization *protoMsgPtr, const std::string& topicStr);
 
+            // Test Used to measure system time difference between 2 systems.
+            int publish(Segway_proto::TsWithID *protoMsgPtr, const std::string& topicStr);
+            int publish(Segway_proto::Ts2WithID *protoMsgPtr, const std::string& topicStr);
         private:
+            ZmqPublisher(const ZmqPublisher &) = delete;
+            void operator=(const ZmqPublisher &) = delete;
             // void* m_context;
             //std::string m_ip;
             void* m_publisher;

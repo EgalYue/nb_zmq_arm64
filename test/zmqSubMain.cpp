@@ -36,9 +36,16 @@ void threadSub(std::shared_ptr<nb_zmq::ZmqSubscriber> mq_recv, std::string topic
                 break;
             }   
         }
-    } else if (StampedPose3Dd == topic) {
+    } else if (StampedLocalization == topic) {
         while(1){
-            subCase::StampedPose3Dd_case(mq_recv, topic);
+            subCase::StampedLocalization_case(mq_recv, topic);
+            if (g_closeSignal){
+                break;
+            }   
+        }
+    } else if (TsWithID == topic) {
+        while(1){
+            subCase::TsWithID_case(mq_recv, topic);
             if (g_closeSignal){
                 break;
             }   
@@ -51,11 +58,11 @@ void threadSub(std::shared_ptr<nb_zmq::ZmqSubscriber> mq_recv, std::string topic
 
 void threadClose(std::shared_ptr<nb_zmq::ZmqSubscriber>  mq_recv){
     while (true) {
-        usleep(30000000); // 5s
+        usleep(5000000); // 5s
         break;
     }
-    mq_recv->terminateBlocking();   
-    g_closeSignal = true;
+    // mq_recv->terminateBlocking();   
+    // g_closeSignal = true;
 }
 
 

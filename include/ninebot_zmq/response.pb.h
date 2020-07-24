@@ -32,6 +32,7 @@
 #include <google/protobuf/repeated_field.h>  // IWYU pragma: export
 #include <google/protobuf/extension_set.h>  // IWYU pragma: export
 #include <google/protobuf/unknown_field_set.h>
+#include "ninebot_zmq/sensor_common.pb.h"
 // @@protoc_insertion_point(includes)
 #include <google/protobuf/port_def.inc>
 #define PROTOBUF_INTERNAL_EXPORT_ninebot_5fzmq_2fresponse_2eproto
@@ -175,9 +176,9 @@ class Response :
 
   // accessors -------------------------------------------------------
 
-  // string type = 1;
+  // string type = 2;
   void clear_type();
-  static const int kTypeFieldNumber = 1;
+  static const int kTypeFieldNumber = 2;
   const std::string& type() const;
   void set_type(const std::string& value);
   void set_type(std::string&& value);
@@ -187,9 +188,9 @@ class Response :
   std::string* release_type();
   void set_allocated_type(std::string* type);
 
-  // string info = 3;
+  // string info = 4;
   void clear_info();
-  static const int kInfoFieldNumber = 3;
+  static const int kInfoFieldNumber = 4;
   const std::string& info() const;
   void set_info(const std::string& value);
   void set_info(std::string&& value);
@@ -199,9 +200,18 @@ class Response :
   std::string* release_info();
   void set_allocated_info(std::string* info);
 
-  // int32 code = 2;
+  // .Segway_proto.Header header = 1;
+  bool has_header() const;
+  void clear_header();
+  static const int kHeaderFieldNumber = 1;
+  const ::Segway_proto::Header& header() const;
+  ::Segway_proto::Header* release_header();
+  ::Segway_proto::Header* mutable_header();
+  void set_allocated_header(::Segway_proto::Header* header);
+
+  // int32 code = 3;
   void clear_code();
-  static const int kCodeFieldNumber = 2;
+  static const int kCodeFieldNumber = 3;
   ::PROTOBUF_NAMESPACE_ID::int32 code() const;
   void set_code(::PROTOBUF_NAMESPACE_ID::int32 value);
 
@@ -212,6 +222,7 @@ class Response :
   ::PROTOBUF_NAMESPACE_ID::internal::InternalMetadataWithArena _internal_metadata_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr type_;
   ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr info_;
+  ::Segway_proto::Header* header_;
   ::PROTOBUF_NAMESPACE_ID::int32 code_;
   mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_ninebot_5fzmq_2fresponse_2eproto;
@@ -227,7 +238,52 @@ class Response :
 #endif  // __GNUC__
 // Response
 
-// string type = 1;
+// .Segway_proto.Header header = 1;
+inline bool Response::has_header() const {
+  return this != internal_default_instance() && header_ != nullptr;
+}
+inline const ::Segway_proto::Header& Response::header() const {
+  const ::Segway_proto::Header* p = header_;
+  // @@protoc_insertion_point(field_get:Segway_proto.Response.header)
+  return p != nullptr ? *p : *reinterpret_cast<const ::Segway_proto::Header*>(
+      &::Segway_proto::_Header_default_instance_);
+}
+inline ::Segway_proto::Header* Response::release_header() {
+  // @@protoc_insertion_point(field_release:Segway_proto.Response.header)
+  
+  ::Segway_proto::Header* temp = header_;
+  header_ = nullptr;
+  return temp;
+}
+inline ::Segway_proto::Header* Response::mutable_header() {
+  
+  if (header_ == nullptr) {
+    auto* p = CreateMaybeMessage<::Segway_proto::Header>(GetArenaNoVirtual());
+    header_ = p;
+  }
+  // @@protoc_insertion_point(field_mutable:Segway_proto.Response.header)
+  return header_;
+}
+inline void Response::set_allocated_header(::Segway_proto::Header* header) {
+  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaNoVirtual();
+  if (message_arena == nullptr) {
+    delete reinterpret_cast< ::PROTOBUF_NAMESPACE_ID::MessageLite*>(header_);
+  }
+  if (header) {
+    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena = nullptr;
+    if (message_arena != submessage_arena) {
+      header = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
+          message_arena, header, submessage_arena);
+    }
+    
+  } else {
+    
+  }
+  header_ = header;
+  // @@protoc_insertion_point(field_set_allocated:Segway_proto.Response.header)
+}
+
+// string type = 2;
 inline void Response::clear_type() {
   type_.ClearToEmptyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }
@@ -278,7 +334,7 @@ inline void Response::set_allocated_type(std::string* type) {
   // @@protoc_insertion_point(field_set_allocated:Segway_proto.Response.type)
 }
 
-// int32 code = 2;
+// int32 code = 3;
 inline void Response::clear_code() {
   code_ = 0;
 }
@@ -292,7 +348,7 @@ inline void Response::set_code(::PROTOBUF_NAMESPACE_ID::int32 value) {
   // @@protoc_insertion_point(field_set:Segway_proto.Response.code)
 }
 
-// string info = 3;
+// string info = 4;
 inline void Response::clear_info() {
   info_.ClearToEmptyNoArena(&::PROTOBUF_NAMESPACE_ID::internal::GetEmptyStringAlreadyInited());
 }

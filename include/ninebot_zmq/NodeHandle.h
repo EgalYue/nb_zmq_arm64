@@ -29,7 +29,9 @@ namespace ninebot_algo{
 
                 std::shared_ptr<LinuxControl> createLinuxCtrl(const std::string& ip, const std::string& msgType);
 
-            private:    
+            private:
+                NodeHandle(const NodeHandle &) = delete;
+                void operator=(const NodeHandle &) = delete;
                 void* m_context;
         };
     

@@ -146,7 +146,7 @@ namespace pubCase
             //std::shared_ptr<FrameImage> frame_pub = std::make_shared<FrameImage>(); // TODO
             std::shared_ptr<FrameStampedImageWithPose> frame_pub = std::make_shared<FrameStampedImageWithPose>(); // TODO
 
-            int64_t curr_ts = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+            int64_t curr_ts = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
             std::cout << curr_ts << std::endl;
 
             toFrameImg(cur_img, frame_pub, std::to_string(i), curr_ts);
@@ -214,7 +214,7 @@ namespace pubCase
     void StampedLidarScan_case( std::shared_ptr<nb_zmq::ZmqPublisher> mq_pub, std::string &topic, int frame_id)
     {
         std::shared_ptr<FrameStampedLidarScan> frame_pub = std::make_shared<FrameStampedLidarScan>();
-        int64_t curr_ts = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+        int64_t curr_ts = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
         std::cout << curr_ts << std::endl;
 
         Segway_proto::StampedLidarScan lidar_proto;
@@ -261,7 +261,7 @@ namespace pubCase
 
     void StampedIMU_case( std::shared_ptr<nb_zmq::ZmqPublisher> mq_pub, std::string &topic, int frame_id)
     {
-        int64_t curr_ts = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+        int64_t curr_ts = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
         std::cout << curr_ts << std::endl;
 
         Segway_proto::StampedIMU imu_proto; 
@@ -289,7 +289,7 @@ namespace pubCase
 
     void StampedEncoderData_case( std::shared_ptr<nb_zmq::ZmqPublisher> mq_pub, std::string &topic, int frame_id)
     {
-        int64_t curr_ts = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+        int64_t curr_ts = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
         std::cout << curr_ts << std::endl;
 
         Segway_proto::StampedEncoderData encoderProto;
@@ -315,12 +315,12 @@ namespace pubCase
         mq_pub->publish(protoMsgPtr.get(), topic);
     }
 
-    void StampedPose3Dd_case( std::shared_ptr<nb_zmq::ZmqPublisher> mq_pub, std::string &topic, int frame_id)
+    void StampedLocalization_case( std::shared_ptr<nb_zmq::ZmqPublisher> mq_pub, std::string &topic, int frame_id)
     {
-        int64_t curr_ts = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+        int64_t curr_ts = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
         std::cout << curr_ts << std::endl;
 
-        Segway_proto::StampedPose3Dd point3DProto;
+        Segway_proto::StampedLocalization point3DProto;
         auto header = point3DProto.mutable_header();
         header->set_seq(1);
         header->set_frame_id(std::to_string(frame_id));
@@ -339,8 +339,34 @@ namespace pubCase
         quat->set_z(0);
         quat->set_w(1);
 
-        std::shared_ptr<Segway_proto::StampedPose3Dd> protoMsgPtr = std::make_shared<Segway_proto::StampedPose3Dd>(point3DProto);
+        std::shared_ptr<Segway_proto::StampedLocalization> protoMsgPtr = std::make_shared<Segway_proto::StampedLocalization>(point3DProto);
         mq_pub->publish(protoMsgPtr.get(), topic);
+    }
+
+    void TsWithID_case(std::shared_ptr<nb_zmq::ZmqPublisher> mq_pub, std::string &topic, int64_t frame_id)
+    {
+        int64_t curr_ts = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+        std::cout << curr_ts << std::endl;
+
+        Segway_proto::TsWithID tsProto;
+        tsProto.set_time_stamp(curr_ts);
+        tsProto.set_frame_id(frame_id);
+
+        std::shared_ptr<Segway_proto::TsWithID> tsProtoPtr = std::make_shared<Segway_proto::TsWithID>(tsProto);
+        mq_pub->publish(tsProtoPtr.get(), topic);
+    }
+
+    void Ts2WithID_case(std::shared_ptr<nb_zmq::ZmqPublisher> mq_pub, std::string &topic, int64_t frame_id)
+    {
+        int64_t curr_ts = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+        std::cout << curr_ts << std::endl;
+
+        Segway_proto::Ts2WithID tsProto;
+        tsProto.set_time_stamp_pub(curr_ts);
+        tsProto.set_frame_id(frame_id);
+
+        std::shared_ptr<Segway_proto::Ts2WithID> tsProtoPtr = std::make_shared<Segway_proto::Ts2WithID>(tsProto);
+        mq_pub->publish(tsProtoPtr.get(), topic);
     }
 } // namespace pubCase
 
@@ -366,7 +392,7 @@ namespace subCase
 
         //cv::Mat res = matFromFrameImg(framePtr);
         std::cout << ">>> FrameImg ts: " << framePtr->msg_desc.header().stamp().time_stamp() << std::endl;
-        int64_t curr_ts = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+        int64_t curr_ts = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
         std::cout << ">>> Curr ts:" << curr_ts << std::endl;
         printf(">>> Diff time: %10.9f\n", (double)(curr_ts - framePtr->msg_desc.header().stamp().time_stamp()) / 1000000000);
 
@@ -393,7 +419,7 @@ namespace subCase
         std::cout<< "====== This is FrameStampedLidarScan callback func ======" <<std::endl;
 
         std::cout << ">>> FrameImg ts: " << framePtr->msg_desc.header().stamp().time_stamp() << std::endl;
-        int64_t curr_ts = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+        int64_t curr_ts = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
         std::cout << ">>> Curr ts:" << curr_ts << std::endl;
         printf(">>> Diff time: %10.9f\n", (double)(curr_ts - framePtr->msg_desc.header().stamp().time_stamp()) / 1000000000);
 
@@ -421,7 +447,7 @@ namespace subCase
         std::cout<< "====== This is StampedIMU callback func ======" <<std::endl;
         
         std::cout << ">>> StampedIMU ts: " << protoMsgPtr->header().stamp().time_stamp() << std::endl;
-        int64_t curr_ts = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+        int64_t curr_ts = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
         std::cout << ">>> Curr ts:" << curr_ts << std::endl;
         printf(">>> Diff time: %10.9f\n", (double)(curr_ts - protoMsgPtr->header().stamp().time_stamp()) / 1000000000);
 
@@ -448,8 +474,8 @@ namespace subCase
     void callbackEncoderData(Segway_proto::StampedEncoderData* protoMsgPtr){
         std::cout<< "====== This is StampedEncoderData callback func ======" <<std::endl;
 
-        std::cout << ">>> FrameImg ts: " << protoMsgPtr->header().stamp().time_stamp() << std::endl;
-        int64_t curr_ts = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+        std::cout << ">>> FrameEncoderData ts: " << protoMsgPtr->header().stamp().time_stamp() << std::endl;
+        int64_t curr_ts = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
         std::cout << ">>> Curr ts:" << curr_ts << std::endl;
         printf(">>> Diff time: %10.9f\n", (double)(curr_ts - protoMsgPtr->header().stamp().time_stamp()) / 1000000000);
 
@@ -467,30 +493,64 @@ namespace subCase
         return res;
     }
 
-    void callbackPose3Dd(Segway_proto::StampedPose3Dd* protoMsgPtr){
+    void callbackPose3Dd(Segway_proto::StampedLocalization* protoMsgPtr){
         std::cout<< "====== This is callbackPose3Dd callback func ======" <<std::endl;
         
-        std::cout << ">>> FrameImg ts: " << protoMsgPtr->header().stamp().time_stamp() << std::endl;
-        int64_t curr_ts = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+        std::cout << ">>> FramePose3Dd ts: " << protoMsgPtr->header().stamp().time_stamp() << std::endl;
+        int64_t curr_ts = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
         std::cout << ">>> Curr ts:" << curr_ts << std::endl;
         printf(">>> Diff time: %10.9f\n", (double)(curr_ts - protoMsgPtr->header().stamp().time_stamp()) / 1000000000);
 
-        std::cout << ">>> StampedPose3Dd pose x: " << protoMsgPtr->pose().p_xyz().x() << std::endl;
-        std::cout << ">>> StampedPose3Dd pose y: " << protoMsgPtr->pose().p_xyz().y() << std::endl;
-        std::cout << ">>> StampedPose3Dd pose z: " << protoMsgPtr->pose().p_xyz().z() << std::endl;
+        std::cout << ">>> StampedLocalization pose x: " << protoMsgPtr->pose().p_xyz().x() << std::endl;
+        std::cout << ">>> StampedLocalization pose y: " << protoMsgPtr->pose().p_xyz().y() << std::endl;
+        std::cout << ">>> StampedLocalization pose z: " << protoMsgPtr->pose().p_xyz().z() << std::endl;
 
-        std::cout << ">>> StampedPose3Dd quen x: " << protoMsgPtr->pose().q_xyzw().x() << std::endl;
-        std::cout << ">>> StampedPose3Dd pose y: " << protoMsgPtr->pose().q_xyzw().y() << std::endl;
-        std::cout << ">>> StampedPose3Dd pose z: " << protoMsgPtr->pose().q_xyzw().z() << std::endl;
-        std::cout << ">>> StampedPose3Dd pose w: " << protoMsgPtr->pose().q_xyzw().w() << std::endl;
+        std::cout << ">>> StampedLocalization quen x: " << protoMsgPtr->pose().q_xyzw().x() << std::endl;
+        std::cout << ">>> StampedLocalization pose y: " << protoMsgPtr->pose().q_xyzw().y() << std::endl;
+        std::cout << ">>> StampedLocalization pose z: " << protoMsgPtr->pose().q_xyzw().z() << std::endl;
+        std::cout << ">>> StampedLocalization pose w: " << protoMsgPtr->pose().q_xyzw().w() << std::endl;
     }
 
-    int StampedPose3Dd_case(std::shared_ptr<nb_zmq::ZmqSubscriber> mq_recv, std::string &topic)
+    int StampedLocalization_case(std::shared_ptr<nb_zmq::ZmqSubscriber> mq_recv, std::string &topic)
     {
-        std::shared_ptr<Segway_proto::StampedPose3Dd> protoMsgPtr = std::make_shared<Segway_proto::StampedPose3Dd>();
+        std::shared_ptr<Segway_proto::StampedLocalization> protoMsgPtr = std::make_shared<Segway_proto::StampedLocalization>();
         int res = mq_recv->subscribe(protoMsgPtr.get(), topic);
         if (res > 0){
             callbackPose3Dd(protoMsgPtr.get());
+        }
+        return res;
+    }
+
+    int TsWithID_case(std::shared_ptr<nb_zmq::ZmqSubscriber> mq_recv, std::string &topic)
+    {
+        std::shared_ptr<Segway_proto::TsWithID> protoMsgPtr = std::make_shared<Segway_proto::TsWithID>();
+        int res = mq_recv->subscribe(protoMsgPtr.get(), topic);
+        if (res > 0){
+            std::cout << ">>> Frame TsWithID ts: " << protoMsgPtr->time_stamp() << std::endl;
+            std::cout << ">>> Frame TsWithID id: " << protoMsgPtr->frame_id() << std::endl;
+            int64_t curr_ts = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+            std::cout << ">>> Curr ts:" << curr_ts << std::endl;
+            printf(">>> Diff time: %10.9f\n", (double)(curr_ts - protoMsgPtr->time_stamp()) / 1000000000);
+        }
+        return res;
+    }
+
+    int Ts2WithID_case(std::shared_ptr<nb_zmq::ZmqSubscriber> mq_recv, std::string &topic)
+    {
+        std::shared_ptr<Segway_proto::Ts2WithID> protoMsgPtr = std::make_shared<Segway_proto::Ts2WithID>();
+        int res = mq_recv->subscribe(protoMsgPtr.get(), topic);
+        if (res > 0){
+
+            int64_t t1 = protoMsgPtr->time_stamp_pub();
+            int64_t t2 = protoMsgPtr->time_stamp_forward();
+            int64_t t3 = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+            std::cout << ">>> Frame Ts2WithID id: " << protoMsgPtr->frame_id() << std::endl;
+            std::cout << ">>> Frame Ts2WithID ts_pub: " << t1 << std::endl;
+            std::cout << ">>> Frame Ts2WithID ts_forward: " << t2 << std::endl;
+            std::cout << ">>> Curr ts:" << t3 << std::endl;
+
+            printf("[Ts2WithID Case]: System time diff: %10.9f\n", (double)((2*t2 - t1 - t3)/2) / 1000000000);
+            printf("[Ts2WithID Case]: TsWithID Msg delay: %10.9f\n", (double)((t3 -t1)/2) / 1000000000);
         }
         return res;
     }
@@ -513,14 +573,14 @@ namespace subPubCase
     }
     */
 
-    void Image_case(nb_zmq::ZmqSubscriber &mq_recv, nb_zmq::ZmqPublisher &mq_pub, const std::string &topic)
+    void Image_case(std::shared_ptr<nb_zmq::ZmqSubscriber> mq_recv, std::shared_ptr<nb_zmq::ZmqPublisher> mq_pub, const std::string &topic)
     {
         std::shared_ptr<FrameStampedImageWithPose> frame_recv = std::make_shared<FrameStampedImageWithPose>();
         // 1. subscribe
-        mq_recv.subscribe(frame_recv.get(), topic);
+        mq_recv->subscribe(frame_recv.get(), topic);
 
         // 2. publish
-        mq_pub.publish(frame_recv.get(), topic); //TODO topic
+        mq_pub->publish(frame_recv.get(), topic); //TODO topic
 
         std::cout << ">>> FrameStampedImageWithPose pose x: " << frame_recv->msg_desc.pose().p_xyz().x() << std::endl;
         std::cout << ">>> FrameStampedImageWithPose pose y: " << frame_recv->msg_desc.pose().p_xyz().y() << std::endl;
@@ -532,15 +592,15 @@ namespace subPubCase
         // cv::waitKey(1);
     }
 
-    void StampedIMU_case(nb_zmq::ZmqSubscriber &mq_recv, nb_zmq::ZmqPublisher &mq_pub, const std::string &topic)
+    void StampedIMU_case(std::shared_ptr<nb_zmq::ZmqSubscriber> mq_recv, std::shared_ptr<nb_zmq::ZmqPublisher> mq_pub, const std::string &topic)
     {
 
         std::shared_ptr<Segway_proto::StampedIMU> protoMsgPtr = std::make_shared<Segway_proto::StampedIMU>();
         // 1. subscribe
-        mq_recv.subscribe(protoMsgPtr.get(), topic);
+        mq_recv->subscribe(protoMsgPtr.get(), topic);
 
         // 2. publish
-        mq_pub.publish(protoMsgPtr.get(), topic);
+        mq_pub->publish(protoMsgPtr.get(), topic);
 
         std::cout << ">>> StampedIMU pose x: " << protoMsgPtr->data().acc_xyz().x() << std::endl;
         std::cout << ">>> StampedIMU pose y: " << protoMsgPtr->data().acc_xyz().y() << std::endl;
@@ -551,14 +611,14 @@ namespace subPubCase
         std::cout << ">>> StampedIMU pose z: " << protoMsgPtr->data().gyro_xyz().z() << std::endl;
     }
 
-    void StampedLidarScan_case(nb_zmq::ZmqSubscriber &mq_recv, nb_zmq::ZmqPublisher &mq_pub, const std::string &topic)
+    void StampedLidarScan_case(std::shared_ptr<nb_zmq::ZmqSubscriber> mq_recv, std::shared_ptr<nb_zmq::ZmqPublisher> mq_pub, const std::string &topic)
     {
         std::shared_ptr<FrameStampedLidarScan> frame_recv = std::make_shared<FrameStampedLidarScan>();
         // 1. subscribe
-        mq_recv.subscribe(frame_recv.get(), topic);
+        mq_recv->subscribe(frame_recv.get(), topic);
 
         // 2. publish
-        mq_pub.publish(frame_recv.get(), topic);
+        mq_pub->publish(frame_recv.get(), topic);
 
         std::cout << ">>> FrameStampedLidarScan lidar size : " << frame_recv->msg_desc.scan().size() << std::endl;
         std::cout << ">>> FrameStampedLidarScan ranges size : " << frame_recv->ranges->size() << std::endl;
@@ -568,56 +628,75 @@ namespace subPubCase
         std::cout << ">>> FrameStampedLidarScan intensities[last] : " << frame_recv->intensities->at(frame_recv->intensities->size() - 1) << std::endl;
     }
 
-    void StampedEncoderData_case(nb_zmq::ZmqSubscriber &mq_recv, nb_zmq::ZmqPublisher &mq_pub, const std::string &topic)
+    void StampedEncoderData_case(std::shared_ptr<nb_zmq::ZmqSubscriber> mq_recv, std::shared_ptr<nb_zmq::ZmqPublisher> mq_pub, const std::string &topic)
     {
         std::shared_ptr<Segway_proto::StampedEncoderData> protoMsgPtr = std::make_shared<Segway_proto::StampedEncoderData>();
         // 1. subscribe
-        mq_recv.subscribe(protoMsgPtr.get(), topic);
+        mq_recv->subscribe(protoMsgPtr.get(), topic);
 
         // 2. publish
-        mq_pub.publish(protoMsgPtr.get(), topic);
+        mq_pub->publish(protoMsgPtr.get(), topic);
 
         std::cout << ">>> StampedEncoderData angular_velocity: " << protoMsgPtr->data().angular_velocity() << std::endl;
         std::cout << ">>> StampedEncoderData_case linear_velocity: " << protoMsgPtr->data().linear_velocity() << std::endl;
     }
 
-    void StampedPose3Dd_case(nb_zmq::ZmqSubscriber &mq_recv, nb_zmq::ZmqPublisher &mq_pub, void* pubSocket, const std::string &topic)
+    void StampedLocalization_case(std::shared_ptr<nb_zmq::ZmqSubscriber> mq_recv, std::shared_ptr<nb_zmq::ZmqPublisher> mq_pub, const std::string &topic)
     {
-        std::shared_ptr<Segway_proto::StampedPose3Dd> protoMsgPtr = std::make_shared<Segway_proto::StampedPose3Dd>();
+        std::shared_ptr<Segway_proto::StampedLocalization> protoMsgPtr = std::make_shared<Segway_proto::StampedLocalization>();
         // 1. subscribe
-        mq_recv.subscribe(protoMsgPtr.get(), topic);
+        mq_recv->subscribe(protoMsgPtr.get(), topic);
 
         // 2. publish
-        mq_pub.publish(protoMsgPtr.get(), topic);
+        mq_pub->publish(protoMsgPtr.get(), topic);
 
-        std::cout << ">>> StampedPose3Dd pose x: " << protoMsgPtr->pose().p_xyz().x() << std::endl;
-        std::cout << ">>> StampedPose3Dd pose y: " << protoMsgPtr->pose().p_xyz().y() << std::endl;
-        std::cout << ">>> StampedPose3Dd pose z: " << protoMsgPtr->pose().p_xyz().z() << std::endl;
+        std::cout << ">>> StampedLocalization pose x: " << protoMsgPtr->pose().p_xyz().x() << std::endl;
+        std::cout << ">>> StampedLocalization pose y: " << protoMsgPtr->pose().p_xyz().y() << std::endl;
+        std::cout << ">>> StampedLocalization pose z: " << protoMsgPtr->pose().p_xyz().z() << std::endl;
 
-        std::cout << ">>> StampedPose3Dd quen x: " << protoMsgPtr->pose().q_xyzw().x() << std::endl;
-        std::cout << ">>> StampedPose3Dd pose y: " << protoMsgPtr->pose().q_xyzw().y() << std::endl;
-        std::cout << ">>> StampedPose3Dd pose z: " << protoMsgPtr->pose().q_xyzw().z() << std::endl;
-        std::cout << ">>> StampedPose3Dd pose w: " << protoMsgPtr->pose().q_xyzw().w() << std::endl;
+        std::cout << ">>> StampedLocalization quen x: " << protoMsgPtr->pose().q_xyzw().x() << std::endl;
+        std::cout << ">>> StampedLocalization pose y: " << protoMsgPtr->pose().q_xyzw().y() << std::endl;
+        std::cout << ">>> StampedLocalization pose z: " << protoMsgPtr->pose().q_xyzw().z() << std::endl;
+        std::cout << ">>> StampedLocalization pose w: " << protoMsgPtr->pose().q_xyzw().w() << std::endl;
+    }
+
+    void TsWithID_case(std::shared_ptr<nb_zmq::ZmqSubscriber> mq_recv, std::shared_ptr<nb_zmq::ZmqPublisher> mq_pub, const std::string &topic)
+    {
+        std::shared_ptr<Segway_proto::TsWithID> protoMsgPtr = std::make_shared<Segway_proto::TsWithID>();
+        // 1. subscribe
+        mq_recv->subscribe(protoMsgPtr.get(), topic);
+
+        int64_t curr_ts = std::chrono::duration_cast<std::chrono::nanoseconds>
+                        (std::chrono::system_clock::now().time_since_epoch()).count();
+
+        std::cout << ">>> TsWithID recv ts: " << protoMsgPtr->time_stamp() << std::endl;
+        protoMsgPtr->set_time_stamp(curr_ts);                
+
+        // 2. publish
+        mq_pub->publish(protoMsgPtr.get(), topic);
+
+
+        std::cout << ">>> TsWithID pub ts: " << protoMsgPtr->time_stamp() << std::endl;
     }
 
 } // namespace subPubCase
 
 namespace serverCase
 {
-    int SlamStartup_case(std::shared_ptr<nb_zmq::ZmqRepServer> zmqRepServerPtr)
+    int SlamConfig_case(std::shared_ptr<nb_zmq::ZmqRepServer> zmqRepServerPtr)
     {
-        std::shared_ptr<Segway_proto::SlamStartup> protoMsgPtr = std::make_shared<Segway_proto::SlamStartup>();
+        std::shared_ptr<Segway_proto::SlamConfig> protoMsgPtr = std::make_shared<Segway_proto::SlamConfig>();
 
         int flag = zmqRepServerPtr->reply(protoMsgPtr.get());
-        std::cout << ">>> Client recv protoMsgPtr->use_fake_pose: " << protoMsgPtr->use_fake_pose() << std::endl;
+        //std::cout << ">>> Client recv protoMsgPtr->use_fake_pose: " << protoMsgPtr->use_fake_pose() << std::endl;
         std::cout << ">>> Client recv protoMsgPtr->camera model: " << protoMsgPtr->fisheye().model() << std::endl;
         if (1 == flag)
         {
-            std::cout << ">>> Navi-port send SlamStartup proto to Cal-port successfully!" << std::endl;
+            std::cout << ">>> Navi-port send SlamConfig proto to Cal-port successfully!" << std::endl;
         }
         else
         {
-            std::cout << ">>> Error occurs when Navi-port send SlamStartup proto to Cal-port!" << std::endl;
+            std::cout << ">>> Error occurs when Navi-port send SlamConfig proto to Cal-port!" << std::endl;
         }
         return flag;
     }
@@ -625,7 +704,7 @@ namespace serverCase
     int Response_case(std::shared_ptr<nb_zmq::ZmqRepServer> zmqRepServerPtr)
     {
         std::shared_ptr<Segway_proto::Response> protoMsgPtr = std::make_shared<Segway_proto::Response>();
-        int flag = zmqRepServerPtr->reply(protoMsgPtr.get()); // SlamStartup
+        int flag = zmqRepServerPtr->reply(protoMsgPtr.get()); // SlamConfig
 
         std::cout << ">>> Client recv Response->type: " << protoMsgPtr->type() << std::endl;
         std::cout << ">>> Client recv Response->code: " << protoMsgPtr->code() << std::endl;
@@ -633,11 +712,11 @@ namespace serverCase
 
         if (1 == flag)
         {
-            std::cout << ">>> Navi-port receive SlamStartup proto from Cal-port successfully!" << std::endl;
+            std::cout << ">>> Navi-port receive SlamConfig proto from Cal-port successfully!" << std::endl;
         }
         else
         {
-            std::cout << ">>> Error occurs when Navi-port receive SlamStartup proto from Cal-port!" << std::endl;
+            std::cout << ">>> Error occurs when Navi-port receive SlamConfig proto from Cal-port!" << std::endl;
         }
         return flag;
     }
@@ -693,22 +772,22 @@ namespace serverCase
 
 namespace clientCase
 {
-    int SlamStartup_case(std::shared_ptr<nb_zmq::ZmqReqClient> zmqReqClientPtr)
+    int SlamConfig_case(std::shared_ptr<nb_zmq::ZmqReqClient> zmqReqClientPtr)
     {
-        Segway_proto::SlamStartup slamStartup;
-        auto fisheye = slamStartup.mutable_fisheye();
+        Segway_proto::SlamConfig SlamConfig;
+        auto fisheye = SlamConfig.mutable_fisheye();
         fisheye->set_model("Mono_model");
-        slamStartup.set_use_fake_pose(true);
-        std::shared_ptr<Segway_proto::SlamStartup> protoMsgPtr = std::make_shared<Segway_proto::SlamStartup>(slamStartup);
+        //SlamConfig.set_use_fake_pose(true);
+        std::shared_ptr<Segway_proto::SlamConfig> protoMsgPtr = std::make_shared<Segway_proto::SlamConfig>(SlamConfig);
 
         int flag = zmqReqClientPtr->request(protoMsgPtr.get());
         if (1 == flag)
         {
-            std::cout << ">>> Cal-port receive SlamStartup proto from Navi-port successfully!" << std::endl;
+            std::cout << ">>> Cal-port receive SlamConfig proto from Navi-port successfully!" << std::endl;
         }
         else
         {
-            std::cout << ">>> Error occurs when Cal-port receive SlamStartup proto from Navi-port!" << std::endl;
+            std::cout << ">>> Error occurs when Cal-port receive SlamConfig proto from Navi-port!" << std::endl;
         }
         return flag;
     }

@@ -1,19 +1,25 @@
 #include "testCase.h"
 #include <thread>
 using namespace ninebot_algo;
-
+static bool g_closeSignal = false;
 
 void threadRun(std::shared_ptr<nb_zmq::ZmqRepServer> ZmqRepServerPtr, std::string ip, std::string msgType){
-    while(1){
-        if (SlamStartup == msgType){
-            if (serverCase::SlamStartup_case(ZmqRepServerPtr) < 0){
+    if (SlamConfig == msgType){
+        while(1){
+            serverCase::SlamConfig_case(ZmqRepServerPtr);
+            if (g_closeSignal){
                 break;
             }
-        } else if (ResponseError == msgType || ResponseMap == msgType || ResponsePose == msgType){
-            if (serverCase::Response_case(ZmqRepServerPtr) < 0){
+        }    
+    } else if (ResponseError == msgType || ResponseMap == msgType || ResponsePose == msgType){
+        while(1){
+            serverCase::Response_case(ZmqRepServerPtr);
+            if (g_closeSignal){
                 break;
             }
-        } else if (IP == msgType){
+        }    
+    } else if (IP == msgType){
+        while(1){
             if (serverCase::IP_case(ZmqRepServerPtr) < 0){
                 break;
             }
@@ -21,7 +27,7 @@ void threadRun(std::shared_ptr<nb_zmq::ZmqRepServer> ZmqRepServerPtr, std::strin
     }
 
     std::cout<< ">>> Closing socket..." << std::endl;
-    ZmqRepServerPtr->closeSocket(); 
+    // ZmqRepServerPtr->closeSocket(); 
 }
 
 void threadClose(std::shared_ptr<nb_zmq::ZmqRepServer> ZmqRepServerPtr){
@@ -29,13 +35,14 @@ void threadClose(std::shared_ptr<nb_zmq::ZmqRepServer> ZmqRepServerPtr){
         usleep(5000000); // 5s
         break;
     }
-    // TODO close ? 
+    ZmqRepServerPtr->terminateBlocking();
+    g_closeSignal = true;
 }
 
 int main(int argc, char *argv[]) {
     if (argc < 3){
         std::cout<< "Usage: zmqRepServer [ip] [msgTpye]" << std::endl;
-        std::cout<< "Ex: zmqRepServer tcp://127.0.0.1 SlamStartup" << std::endl;
+        std::cout<< "Ex: zmqRepServer tcp://127.0.0.1 SlamConfig" << std::endl;
         return -1;
     }
     std::cout << "=== This is zmqReqServer... ===" << std::endl;

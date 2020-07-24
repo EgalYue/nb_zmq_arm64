@@ -18,6 +18,10 @@ add_executable(zmqSub test/zmqSubMain.cpp )
 add_executable(zmqRepServer test/zmqRepServerMain.cpp )
 add_executable(zmqReqClient test/zmqReqClientMain.cpp )
 add_executable(zmqSubAllThreadMain test/zmqSubAllThreadMain.cpp)
+add_executable(stress_testing test/stress_testing.cpp)
+
+add_executable(zmqSubPub test/zmqSubPubMain.cpp)
+add_executable(zmqPubSub test/zmqPubSubMain.cpp)
 
 # add_executable(zmqSub test/zmqSubMain.cpp ${SRC_CPP} ${PROTO_SRCS})
 # target_link_libraries(zmqSub ${ZMQ_LIBRARIES} ${PROTOBUF_LIBRARIES} ${OpenCV_LIBS})

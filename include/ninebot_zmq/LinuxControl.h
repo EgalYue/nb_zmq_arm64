@@ -2,7 +2,6 @@
 #define NINEBOT_ZMQ_LINUXCONTROL_H
 
 #include <stdint.h>
-#include <zmq.h>
 #include "ninebot_zmq/common.h"
 #include "ninebot_zmq/util.h"
 
@@ -28,6 +27,9 @@ namespace ninebot_algo{
             int requestHeartBeat(Segway_proto::HeartbeatCmd* protoMsgPtr, long timeout);
 
         private:
+            LinuxControl(const LinuxControl &) = delete;
+            void operator=(const LinuxControl &) = delete;
+            
             // void *m_context;
             void *m_request;
             // std::string m_ip;

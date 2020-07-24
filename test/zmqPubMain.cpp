@@ -37,11 +37,18 @@ void threadPub(std::shared_ptr<nb_zmq::ZmqPublisher> mq_pub, std::string& topic)
             pubCase::StampedEncoderData_case(mq_pub, topic, frame_id);
             frame_id++;
         }
-    } else if (StampedPose3Dd == topic) {
+    } else if (StampedLocalization == topic) {
         int frame_id = 0;
         while(!g_bClosePublish){
             usleep(50000); // 20Hz   
-            pubCase::StampedPose3Dd_case(mq_pub, topic, frame_id);
+            pubCase::StampedLocalization_case(mq_pub, topic, frame_id);
+            frame_id++;
+        }
+    } else if (TsWithID == topic) {
+        int64_t frame_id = 0;
+        while(!g_bClosePublish){
+            usleep(50000); // 20Hz   
+            pubCase::TsWithID_case(mq_pub, topic, frame_id);
             frame_id++;
         }
     }
@@ -53,7 +60,7 @@ void threadClose(){
         break;
     }
 
-    g_bClosePublish = true;
+    g_bClosePublish = false;
 }
 
 int main(int argc, char *argv[]) {

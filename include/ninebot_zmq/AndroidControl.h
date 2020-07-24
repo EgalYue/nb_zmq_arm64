@@ -2,7 +2,6 @@
 #define NINEBOT_ZMQ_ANDROIDCONTROL_H
 
 #include <stdint.h>
-#include <zmq.h>
 #include "ninebot_zmq/common.h"
 #include "ninebot_zmq/util.h"
 
@@ -31,6 +30,9 @@ namespace ninebot_algo{
             int reconnectAndroidNode();
             
         private:
+            AndroidControl(const AndroidControl &) = delete;
+            void operator=(const AndroidControl &) = delete;
+
             // void* m_context;
             void* m_reply;
             // char m_endpoint[100];

@@ -5,9 +5,9 @@
 #include <vector>
 #include <string>
 #include <functional>
+#include <memory>
 
 #include "ninebot_zmq/util.h"
-#include <zmq.h>
 
 
 
@@ -15,9 +15,7 @@
 namespace ninebot_algo{
     namespace nb_zmq{
 
-        typedef struct nbZmqSockets{
-            zmq_pollitem_t items [2];
-        } nbZmqSockets;
+        struct nbZmqSockets;
 
         class ZmqSubscriber {
         public:
@@ -25,39 +23,49 @@ namespace ninebot_algo{
 
             ~ZmqSubscriber();
 
+            int init();
+
+            int reconnect();
+
             void closeSocket();
 
 
             /**
              * Blocking mode, blocked until receive one msg.
+             * If the duration of disconnect larger than 1min, this node will reconnect. 
              * Return 1: receive msg Successfully.
              * Return -1: Error occurs when call 'zmq_msg_recv'; OR receive 'Terminate socket' signal. 
              */
-            int subscribe(FrameStampedImageWithPose* framePtr, const std::string& topicStr);
+            int subscribe(FrameStampedImageWithPose* framePtr, const std::string& topicStr, long timeout=-1);
 
-            int subscribe(FrameStampedLidarScan* framePtr, const std::string& topicStr);
+            int subscribe(FrameStampedLidarScan* framePtr, const std::string& topicStr, long timeout=-1);
 
-            int subscribe(Segway_proto::StampedIMU* protoMsgPtr, const std::string& topicStr);
+            int subscribe(Segway_proto::StampedIMU* protoMsgPtr, const std::string& topicStr, long timeout=-1);
 
-            int subscribe(Segway_proto::StampedEncoderData* protoMsgPtr, const std::string& topicStr);
+            int subscribe(Segway_proto::StampedEncoderData* protoMsgPtr, const std::string& topicStr, long timeout=-1);
 
-            int subscribe(Segway_proto::StampedPose3Dd* protoMsgPtr, const std::string& topicStr);
+            int subscribe(Segway_proto::StampedLocalization* protoMsgPtr, const std::string& topicStr, long timeout=-1);
             
+            // Test Used to measure system time difference between 2 systems.
+            int subscribe(Segway_proto::TsWithID *protoMsgPtr, const std::string& topicStr, long timeout=-1);
+            int subscribe(Segway_proto::Ts2WithID *protoMsgPtr, const std::string& topicStr, long timeout=-1);
             /**
              * Send Terminate signal
              */  
             int terminateBlocking();
 
         private:
+            ZmqSubscriber(const ZmqSubscriber &) = delete;
+            void operator=(const ZmqSubscriber &) = delete;
             /**
              * Receive Terminate signal
              */
             int executeTerminateCmd();
 
             void* m_context;
-            // std::string m_ip;
+            std::string m_ip;
             std::string m_msgType;
-            nbZmqSockets m_Sockets;
+            std::shared_ptr<nbZmqSockets> m_Sockets;
         };
 
     } // namespace nb_zmq
